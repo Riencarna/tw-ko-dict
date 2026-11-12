@@ -129,9 +129,23 @@
   var HIST = load('twko_hist', []);
   USER.forEach(function (e) { e.src = 'user'; e.s = ''; e.en = ''; e.k = pinKey(e.p || ''); });
 
+  // 예문 모음: 예문 파일 + 단어에 달린 예문 + 생활 회화 문장 + 문법 카드 예문
+  var EXS = [], PHRASE = Object.create(null);
+  (function () {
+    var seen = Object.create(null);
+    function add(zh, ko) { zh = zh.trim(); if (zh && !seen[zh]) { seen[zh] = 1; EXS.push({ zh: zh, ko: ko.trim() }); } }
+    (window.EX_RAW || '').split('\n').forEach(function (l) { var i = l.indexOf('='); if (i > 0) add(l.slice(0, i), l.slice(i + 1)); });
+    KO.forEach(function (e) {
+      if (e.ex) add(e.ex.zh, e.ex.ko);
+      if (e.cat === '생활 회화') { PHRASE[e.t] = 1; add(e.t, e.ko[0]); }
+    });
+    GR.forEach(function (g) { g.ex.forEach(function (x) { if (/[。？！]$/.test(x.zh)) add(x.zh, x.ko); }); });
+  })();
+
   var INDEX = Object.create(null);   // 표제어 → 항목 목록
   function buildIndex() {
     INDEX = Object.create(null);
+    EXS.forEach(function (x) { x.tk = null; });
     USER.concat(KO).forEach(function (e) { (INDEX[e.t] = INDEX[e.t] || []).push(e); });
     // 성씨·고유명사 풀이(병음이 대문자로 시작)는 일반 풀이 뒤에 오도록 두 번에 나눠 넣는다.
     CE.forEach(function (e) { if (!e.h && !e.cap) (INDEX[e.t] = INDEX[e.t] || []).push(e); });
@@ -273,17 +287,31 @@
   var VS = '대만 vs 본토';
   var filter = 'all', activeCat = '';
 
+  var UI = load('twko_ui', {});   // 접어 둔 구역 기억: { hist: false, cats: false }
+  function foldHead(key, title, n) {
+    var open = UI[key] !== false;
+    return '<button class="sec fold" data-act="fold" data-sec="' + key + '" aria-expanded="' + open + '"><span>' + title +
+      ' <i>' + n + '</i></span><span class="chev">' + (open ? '접기 ▲' : '펼치기 ▼') + '</span></button>';
+  }
   function homeHtml() {
     var h = '';
     if (HIST.length) {
-      h += '<h2 class="sec">최근 본 단어 <a href="#/hist">전체 보기</a></h2><div class="list">' + HIST.slice(0, 5).map(rowHtml).join('') + '</div>';
+      h += foldHead('hist', '최근 본 단어', HIST.length);
+      if (UI.hist !== false) {
+        h += '<div class="list">' + HIST.slice(0, 5).map(rowHtml).join('') + '</div>' +
+          (HIST.length > 5 ? '<a class="more" href="#/hist">최근 본 단어 전체 보기 (' + HIST.length + ')</a>' : '');
+      }
     }
     var counts = {}, order = [];
     KO.forEach(function (e) { if (!counts[e.cat]) { counts[e.cat] = 0; order.push(e.cat); } counts[e.cat]++; });
     var vs = KO.filter(function (e) { return e.cn; }).length;
-    h += '<h2 class="sec">분류별 단어</h2><div class="chips"><a class="hot" href="#/c/' + encodeURIComponent(VS) + '">' + VS + '<span>' + vs + '</span></a>';
-    order.forEach(function (c) { h += '<a href="#/c/' + encodeURIComponent(c) + '">' + esc(c) + '<span>' + counts[c] + '</span></a>'; });
-    h += '</div><p class="status">' + esc(statusText()) + '<br>검색 예: <span lang="zh-Hant">捷運</span> · 택시 · lese · ㄐㄧㄝˊ ㄩㄣˋ · pineapple</p>';
+    h += foldHead('cats', '분류별 단어', order.length + 1);
+    if (UI.cats !== false) {
+      h += '<div class="chips"><a class="hot" href="#/c/' + encodeURIComponent(VS) + '">' + VS + '<span>' + vs + '</span></a>';
+      order.forEach(function (c) { h += '<a href="#/c/' + encodeURIComponent(c) + '">' + esc(c) + '<span>' + counts[c] + '</span></a>'; });
+      h += '</div>';
+    }
+    h += '<p class="status">' + esc(statusText()) + '<br>검색 예: <span lang="zh-Hant">捷運</span> · 택시 · lese · ㄐㄧㄝˊ ㄩㄣˋ · pineapple</p>';
     return h;
   }
   function renderSearch() {
@@ -309,19 +337,38 @@
   // ---------- 상세 화면 ----------
   var entryWord = '', entryTab = 'def';
 
-  function segment(text) {   // 예문을 사전에 있는 단어 단위로 잘라 누를 수 있게 한다.
-    var out = '', cs = chars(text), i = 0;
+  function tokenize(text) {  // 문장을 사전에 있는 단어 단위로 자른다(가장 긴 단어 우선). 통문장 표제어는 건너뛴다.
+    var out = [], cs = chars(text), i = 0;
     while (i < cs.length) {
-      if (!HAN.test(cs[i])) { out += esc(cs[i]); i++; continue; }
+      if (!HAN.test(cs[i])) { out.push({ w: cs[i], han: false }); i++; continue; }
       var hit = cs[i];
       for (var n = Math.min(6, cs.length - i); n > 1; n--) {
         var w = cs.slice(i, i + n).join('');
-        if (INDEX[w]) { hit = w; break; }
+        if (INDEX[w] && !PHRASE[w]) { hit = w; break; }
       }
-      out += '<a href="' + wordHref(hit) + '">' + esc(hit) + '</a>';
+      out.push({ w: hit, han: true });
       i += chars(hit).length;
     }
     return out;
+  }
+  function segment(text) {   // 예문 속 단어를 누를 수 있게 한다.
+    return tokenize(text).map(function (k) {
+      return k.han ? '<a href="' + wordHref(k.w) + '">' + esc(k.w) + '</a>' : esc(k.w);
+    }).join('');
+  }
+  function exHtml(x) {
+    return '<div class="ex"><button class="say" data-act="say" data-t="' + esc(x.zh) + '" aria-label="예문 듣기">' +
+      '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg></button>' +
+      '<div class="zh" lang="zh-Hant">' + segment(x.zh) + '</div><div class="tr">' + esc(x.ko) + '</div></div>';
+  }
+  function examplesFor(t, skip) {   // 표제어가 들어 있는 예문(짧은 것부터 최대 5개)
+    var multi = chars(t).length > 1;
+    return EXS.filter(function (x) {
+      if (x.zh === t || skip[x.zh] || x.zh.indexOf(t) < 0) return false;
+      if (multi) return true;
+      if (!x.tk) x.tk = tokenize(x.zh).map(function (k) { return k.w; });
+      return x.tk.indexOf(t) >= 0;
+    }).sort(function (a, b) { return a.zh.length - b.zh.length; }).slice(0, 5);
   }
   function linkWords(s) {     // "A / B" 형태의 본토 표현을 각각 링크로
     return s.split(' / ').map(function (w) { return HAN.test(w) ? '<a href="' + wordHref(w) + '" lang="zh-Hant">' + esc(w) + '</a>' : esc(w); }).join(' / ');
@@ -345,7 +392,7 @@
     if (e.cat) b += '<span class="badge plain">' + esc(e.cat) + '</span>';
     if (b) h += '<div class="badges">' + b + '</div>';
     if (e.note) h += '<p class="note">' + esc(e.note) + '</p>';
-    if (e.ex) h += '<div class="ex"><div class="zh" lang="zh-Hant">' + segment(e.ex.zh) + '</div><div class="tr">' + esc(e.ex.ko) + '</div></div>';
+    if (e.ex) h += exHtml(e.ex);
     if (e.src !== 'ce' && e.en) h += '<p class="ref">영어 참고: ' + esc(e.en) + '</p>';
     if (e.src === 'ce') h += '<button class="linkbtn" data-act="addko" data-t="' + esc(e.t) + '" data-p="' + esc(e.p) + '">한국어 뜻 직접 추가</button>';
     return h + '</div>';
@@ -378,6 +425,10 @@
       } else {
         h += list.map(function (e) { return senseHtml(e, list.length > 1); }).join('');
       }
+      var own = {};
+      list.forEach(function (e) { if (e.ex) own[e.ex.zh] = 1; });
+      var exs = examplesFor(t, own);
+      if (exs.length) h += '<h2 class="sec">예문</h2><div class="sense">' + exs.map(exHtml).join('') + '</div>';
       var gr = GR.filter(function (g) { return g.keys.indexOf(t) >= 0; });
       if (gr.length) h += '<h2 class="sec">이 단어가 쓰이는 문법</h2><div class="list">' + gr.map(gRowHtml).join('') + '</div>';
     } else if (entryTab === 'chars') {
@@ -418,11 +469,7 @@
     var h = '<div class="ehead"><div class="gtitle" lang="zh-Hant">' + esc(g.title) + '</div><div class="gsum">' + esc(g.sum) + '</div>' +
       '<div class="badges"><span class="badge plain">' + LV_NAME[g.lv] + '</span>' + (g.lv !== 'TW' && g.tw ? '<span class="badge">대만 참고</span>' : '') + '</div></div>';
     h += '<div class="sense"><p class="gdesc">' + esc(g.desc) + '</p>';
-    g.ex.forEach(function (x) {
-      h += '<div class="ex"><button class="say" data-act="say" data-t="' + esc(x.zh) + '" aria-label="예문 듣기">' +
-        '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg></button>' +
-        '<div class="zh" lang="zh-Hant">' + segment(x.zh) + '</div><div class="tr">' + esc(x.ko) + '</div></div>';
-    });
+    h += g.ex.map(exHtml).join('');
     if (g.tw) h += '<p class="twnote"><b>대만 · 본토 차이</b> ' + esc(g.tw) + '</p>';
     h += '</div>';
     var words = [];
@@ -476,15 +523,50 @@
   }
   window.addEventListener('hashchange', route);
 
+  // ---------- 음성 ----------
+  var toastTimer;
+  function toast(msg) {
+    var el = $('#toast');
+    if (!el) { el = document.createElement('div'); el.id = 'toast'; document.body.appendChild(el); }
+    el.textContent = msg;
+    el.className = 'show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.className = ''; }, 6000);
+  }
+  var synth = window.speechSynthesis, voices = [], lastUtter = null;
+  function loadVoices() { if (synth) voices = synth.getVoices() || []; }
+  if (synth) {
+    loadVoices();   // 기기에 따라 음성 목록이 늦게 준비되므로 준비되면 다시 읽는다
+    if (synth.addEventListener) synth.addEventListener('voiceschanged', loadVoices);
+    else synth.onvoiceschanged = loadVoices;
+  }
+  function pickVoice() {   // 대만 중국어 → 그 밖의 표준 중국어 순으로 고른다(광둥어 제외)
+    var zh = voices.filter(function (v) {
+      return /^(zh|cmn)/i.test(v.lang) && !/HK|MO|yue|Cantonese|粵/i.test(v.lang + ' ' + v.name);
+    });
+    function find(re) { return zh.filter(function (v) { return re.test(v.lang + ' ' + v.name); })[0]; }
+    return find(/TW|Hant|Taiwan|臺灣|台灣/i) || find(/CN|Hans/i) || zh[0] || null;
+  }
+  var NO_VOICE = '이 기기에 중국어 음성이 없어 소리를 낼 수 없습니다. ‘내 단어’ 탭 아래의 “소리가 안 나올 때”를 확인해 주세요.';
   function speak(text) {
-    if (!window.speechSynthesis) { alert('이 브라우저는 음성 읽기를 지원하지 않습니다.'); return; }
-    var u = new SpeechSynthesisUtterance(text);
-    u.lang = 'zh-TW';
-    var v = speechSynthesis.getVoices().filter(function (x) { return /zh[-_]TW/i.test(x.lang); })[0];
+    if (!synth || !window.SpeechSynthesisUtterance) { toast('이 브라우저는 음성 읽기를 지원하지 않습니다.'); return; }
+    loadVoices();
+    var v = pickVoice();
+    if (voices.length && !v) { toast(NO_VOICE); return; }   // 음성 목록은 있는데 중국어가 없는 경우
+    var u = new SpeechSynthesisUtterance(text), started = false;
+    u.lang = v ? v.lang.replace('_', '-') : 'zh-TW';
     if (v) u.voice = v;
     u.rate = 0.9;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
+    u.onstart = function () { started = true; };
+    u.onerror = function (ev) { if (ev.error !== 'interrupted' && ev.error !== 'canceled') toast(NO_VOICE); };
+    lastUtter = u;   // 재생이 끝나기 전에 사라지지 않도록 붙잡아 둔다
+    var go = function () {
+      synth.speak(u);
+      if (synth.paused) synth.resume();
+      setTimeout(function () { if (!started && lastUtter === u && !synth.speaking && !synth.pending) toast(NO_VOICE); }, 3000);
+    };
+    // 재생 중에 다시 누르면 멈추고 조금 뒤에 새로 읽는다(멈춘 직후 바로 읽으면 무시되는 기기가 있다)
+    if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 150); } else go();
   }
 
   // ---------- 이벤트 ----------
@@ -524,6 +606,11 @@
     if (act === 'back') { if (history.length > 1) history.back(); else location.hash = '#/'; }
     if (act === 'say-entry') speak(entryWord);
     if (act === 'say') speak(b.dataset.t);
+    if (act === 'fold') {
+      UI[b.dataset.sec] = UI[b.dataset.sec] === false;   // 접혀 있으면 펼치고, 펼쳐져 있으면 접는다
+      save('twko_ui', UI);
+      renderSearch();
+    }
     if (act === 'fav') {
       var had = FAVS.some(function (f) { return f.t === entryWord; });
       FAVS = FAVS.filter(function (f) { return f.t !== entryWord; });
