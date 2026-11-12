@@ -113,11 +113,18 @@
   <details class="help">
     <summary>🔊 소리가 안 나올 때</summary>
     <div>
-      이 사전은 기기에 들어 있는 <b>중국어 음성</b>으로 읽어 줍니다. 기기에 중국어 음성이 없으면 소리가 나지 않습니다.<br>
+      이 사전은 기기에 들어 있는 <b>중국어 음성</b>으로 읽어 줍니다.<br>
+      <b>아이폰</b><br>
+      ① 옆면의 <b>무음 스위치</b>를 풀어 주세요(주황색이 보이면 무음입니다). 스위치가 없는 기종은 제어 센터에서 무음 모드를 끕니다. 무음 모드에서는 이 사전의 소리가 나지 않습니다.<br>
+      ② 🔊을 누른 직후 볼륨 올리기 버튼을 눌러 소리를 키워 주세요.<br>
+      ③ 홈 화면 아이콘으로 열었을 때만 안 나면, 사파리에서 주소를 직접 열어 눌러 보세요.<br>
       <b>안드로이드</b>: 설정 → 일반 → 글자 읽어주기(TTS) → 기본 엔진 옆 ⚙ → 음성 데이터 설치 → 중국어(대만)<br>
-      <b>아이폰</b>: 중국어 음성이 기본으로 들어 있습니다. 무음 스위치와 볼륨을 확인해 주세요.<br>
       <b>Windows</b>: 설정 → 시간 및 언어 → 음성 → 음성 추가 → 중국어(번체, 대만). 또는 Edge나 Chrome 브라우저로 열어 보세요.<br>
-      설치한 뒤에는 사전을 완전히 닫았다가 다시 열어 주세요.
+      <span class="btnrow">
+        <button type="button" data-act="voice-test">테스트 소리 듣기</button>
+        <button type="button" data-act="voice-status">음성 상태 확인</button>
+      </span>
+      <pre id="voicestatus"></pre>
     </div>
   </details>
   <details class="help">
