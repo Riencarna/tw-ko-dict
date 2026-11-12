@@ -548,8 +548,37 @@
     return find(/TW|Hant|Taiwan|臺灣|台灣/i) || find(/CN|Hans/i) || zh[0] || null;
   }
   var NO_VOICE = '이 기기에 중국어 음성이 없어 소리를 낼 수 없습니다. ‘내 단어’ 탭 아래의 “소리가 안 나올 때”를 확인해 주세요.';
+  var IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var STANDALONE = !!navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  var IOS_HINT = '소리가 안 들리면 아이폰 옆면의 무음 스위치를 풀고, 볼륨 버튼으로 소리를 키워 주세요.';
+  function voiceStatus() {   // 소리가 안 날 때 원인을 좁히기 위한 정보
+    loadVoices();
+    var zh = voices.filter(function (v) { return /^(zh|cmn)/i.test(v.lang); });
+    return '음성 기능: ' + (synth ? '있음' : '없음') +
+      '\n전체 음성: ' + voices.length + '개' +
+      '\n중국어 음성: ' + zh.length + '개' + (zh.length ? ' (' + zh.map(function (v) { return v.name + ' ' + v.lang; }).join(', ') + ')' : '') +
+      '\n실행 방식: ' + (STANDALONE ? '홈 화면 앱' : '브라우저') +
+      '\n기기: ' + (IOS ? '아이폰/아이패드' : '그 밖의 기기') +
+      '\n' + (navigator.userAgent.match(/(OS [\d_]+|Android [\d.]+|Windows NT [\d.]+|Version\/[\d.]+|Chrome\/[\d]+)/g) || []).join(' · ');
+  }
   function speak(text) {
     if (!synth || !window.SpeechSynthesisUtterance) { toast('이 브라우저는 음성 읽기를 지원하지 않습니다.'); return; }
+    if (IOS) {
+      // 아이폰: 내장된 대만 중국어 음성을 시스템이 고르게 하고, 누른 그 순간에 곧바로 읽는다
+      // (조금이라도 늦게 호출하면 "사용자가 누른 동작"으로 인정되지 않아 소리가 막힌다).
+      var iu = new SpeechSynthesisUtterance(text);
+      iu.lang = 'zh-TW';
+      iu.rate = 0.9;
+      iu.volume = 1;
+      iu.onerror = function (ev) { if (ev.error !== 'interrupted' && ev.error !== 'canceled') toast('음성을 재생하지 못했습니다. (' + ev.error + ')'); };
+      lastUtter = iu;
+      if (synth.speaking || synth.pending) synth.cancel();
+      if (synth.paused) synth.resume();
+      synth.speak(iu);
+      var shown = +load('twko_ioshint', 0);
+      if (shown < 3) { save('twko_ioshint', shown + 1); toast(IOS_HINT); }
+      return;
+    }
     loadVoices();
     var v = pickVoice();
     if (voices.length && !v) { toast(NO_VOICE); return; }   // 음성 목록은 있는데 중국어가 없는 경우
@@ -606,6 +635,12 @@
     if (act === 'back') { if (history.length > 1) history.back(); else location.hash = '#/'; }
     if (act === 'say-entry') speak(entryWord);
     if (act === 'say') speak(b.dataset.t);
+    if (act === 'voice-test') speak('你好，歡迎來到台灣。');
+    if (act === 'voice-status') {
+      var st = voiceStatus();
+      $('#voicestatus').textContent = st;
+      if (synth && synth.addEventListener) setTimeout(function () { $('#voicestatus').textContent = voiceStatus(); }, 800);
+    }
     if (act === 'fold') {
       UI[b.dataset.sec] = UI[b.dataset.sec] === false;   // 접혀 있으면 펼치고, 펼쳐져 있으면 접는다
       save('twko_ui', UI);
