@@ -51,6 +51,32 @@
   <div id="entry"></div>
 </section>
 
+<!-- 문법 목록 -->
+<section id="screen-grammar" class="screen" hidden>
+  <header class="bar">
+    <div class="bartitle">문법</div>
+    <div id="gfilters" class="seg-ctl">
+      <button data-gf="all" class="on">전체</button>
+      <button data-gf="A1">A1</button>
+      <button data-gf="A2">A2</button>
+      <button data-gf="B1">B1</button>
+      <button data-gf="TW">대만식</button>
+    </div>
+  </header>
+  <div id="glist" class="list"></div>
+</section>
+
+<!-- 문법 카드 -->
+<section id="screen-gcard" class="screen" hidden>
+  <header class="bar topbar">
+    <button data-act="back" class="icon" aria-label="뒤로">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="grow"></div>
+  </header>
+  <div id="gcard"></div>
+</section>
+
 <!-- 단어장 -->
 <section id="screen-fav" class="screen" hidden>
   <header class="bar title">단어장</header>
@@ -89,6 +115,7 @@
 
 <nav id="nav">
   <a href="#/" data-nav="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>사전</a>
+  <a href="#/g" data-nav="grammar"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z"/><path d="M5 17a3 3 0 013-3h11"/></svg>문법</a>
   <a href="#/fav" data-nav="fav"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1-5.4-3-5.4 3 1.1-6.1L3.2 9.9l6.1-.8z"/></svg>단어장</a>
   <a href="#/hist" data-nav="hist"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>기록</a>
   <a href="#/mine" data-nav="mine"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>내 단어</a>
@@ -96,6 +123,9 @@
 
 <script src="data/ko-data.js"></script>
 <script src="data/ko-data-2.js"></script>
+<script src="data/ko-data-3.js"></script>
+<script src="data/ko-data-4.js"></script>
+<script src="data/grammar-data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
