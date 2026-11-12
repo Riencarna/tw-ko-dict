@@ -85,18 +85,44 @@
 
   // ---------- 데이터 ----------
   function parseKo(raw) {
-    var list = [];
+    var list = [], seen = Object.create(null), cat = '';
     raw.split('\n').forEach(function (line) {
+      if (line[0] === '#') { cat = line.slice(1).trim(); return; }   // "#분류" 줄: 아래 줄들의 기본 분류
       var f = line.split('|');
       if (f.length < 3 || !f[0].trim()) return;
+      var t = f[0].trim(), key = t + '|' + pinKey(f[1]);
+      if (seen[key]) return;                                          // 같은 단어가 두 번 나오면 먼저 나온 것만 쓴다
+      seen[key] = 1;
       var ex = null;
       if (f[6]) { var i = f[6].indexOf('='); if (i > 0) ex = { zh: f[6].slice(0, i), ko: f[6].slice(i + 1) }; }
-      list.push({ src: 'ko', t: f[0].trim(), s: '', p: f[1].trim(), ko: f[2].split(';').map(function (x) { return x.trim(); }),
-        cat: (f[3] || '').trim(), cn: (f[4] || '').trim(), note: (f[5] || '').trim(), ex: ex, en: '', k: pinKey(f[1]) });
+      list.push({ src: 'ko', t: t, s: '', p: f[1].trim(), ko: f[2].split(';').map(function (x) { return x.trim(); }),
+        cat: (f[3] || '').trim() || cat, cn: (f[4] || '').trim(), note: (f[5] || '').trim(), ex: ex, en: '', k: pinKey(f[1]) });
     });
     return list;
   }
   var KO = parseKo(window.KO_RAW || '');
+
+  // 문법 카드
+  var LV_NAME = { A1: 'A1 · 입문', A2: 'A2 · 기초', B1: 'B1 · 중급', TW: '대만식 문법' };
+  var GR = (window.GRAMMAR_RAW || '').split('\n').map(function (line) { return line.split('|'); })
+    .filter(function (f) { return f.length >= 5 && f[0].trim(); })
+    .map(function (f, i) {
+      return { id: i, title: f[0].trim(), sum: f[1].trim(), lv: f[2].trim(), desc: f[3].trim(),
+        ex: f[4].split('//').map(function (x) { var k = x.indexOf('='); return { zh: x.slice(0, k), ko: x.slice(k + 1) }; }),
+        keys: (f[5] || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean), tw: (f[6] || '').trim() };
+    });
+  function gRowHtml(g) {
+    return '<a class="row" href="#/g/' + g.id + '"><div class="l1"><span class="gt" lang="zh-Hant">' + esc(g.title) + '</span></div>' +
+      '<div class="df ko">' + (g.lv === 'TW' ? '' : '<span class="tag lv">' + g.lv + '</span>') +
+      (g.lv === 'TW' || g.tw ? '<span class="tag tw">台</span>' : '') + esc(g.sum) + '</div></a>';
+  }
+  function grammarFor(q) {   // 검색어·표제어와 관련된 문법 카드
+    if (!q) return [];
+    var han = HAN.test(q);
+    return GR.filter(function (g) {
+      return han ? (g.keys.indexOf(q) >= 0 || g.title.indexOf(q) >= 0) : (g.sum.indexOf(q) >= 0);
+    });
+  }
   var CE = [];
   var USER = load('twko_user', []);
   var FAVS = load('twko_favs', []);
@@ -266,7 +292,8 @@
     $('#filters').hidden = !q;
     if (q) {
       var list = search(q, filter);
-      $('#home').innerHTML = '';
+      var gr = /[㐀-鿿가-힣]/.test(q) && filter === 'all' ? grammarFor(q).slice(0, 3) : [];
+      $('#home').innerHTML = gr.length ? '<h2 class="sec">문법</h2><div class="list">' + gr.map(gRowHtml).join('') + '</div>' : '';
       $('#results').innerHTML = (list.length ? '<div class="count">결과 ' + list.length + (list.length === MAX ? '개 이상' : '개') + '</div>' : '') +
         listHtml(list, ceState === 'loading' ? '검색 결과가 없습니다.<br>영어 참고 사전을 아직 불러오는 중입니다.' : '검색 결과가 없습니다.');
     } else if (activeCat) {
@@ -351,6 +378,8 @@
       } else {
         h += list.map(function (e) { return senseHtml(e, list.length > 1); }).join('');
       }
+      var gr = GR.filter(function (g) { return g.keys.indexOf(t) >= 0; });
+      if (gr.length) h += '<h2 class="sec">이 단어가 쓰이는 문법</h2><div class="list">' + gr.map(gRowHtml).join('') + '</div>';
     } else if (entryTab === 'chars') {
       h += '<div class="list">' + cs.map(function (c) {
         return (INDEX[c] || [{ t: c, p: '', d: '', src: 'ce' }]).map(rowHtml).join('');
@@ -367,6 +396,39 @@
     HIST.unshift(snapshot(t));
     HIST = HIST.slice(0, 100);
     save('twko_hist', HIST);
+  }
+
+  // ---------- 문법 화면 ----------
+  var gfilter = 'all';
+  function renderGrammar() {
+    var h = '';
+    ['A1', 'A2', 'B1', 'TW'].forEach(function (lv) {
+      if (gfilter !== 'all' && gfilter !== lv && !(gfilter === 'TW')) return;
+      var items = GR.filter(function (g) {
+        if (gfilter === 'TW') return g.lv === lv && (g.lv === 'TW' || g.tw);
+        return g.lv === lv;
+      });
+      if (items.length) h += '<h2 class="sec">' + LV_NAME[lv] + ' · ' + items.length + '개</h2>' + items.map(gRowHtml).join('');
+    });
+    $('#glist').innerHTML = h || '<p class="empty">문법 카드가 없습니다.</p>';
+  }
+  function renderGCard(id) {
+    var g = GR[id];
+    if (!g) { $('#gcard').innerHTML = '<p class="empty">문법 카드를 찾을 수 없습니다.</p>'; return; }
+    var h = '<div class="ehead"><div class="gtitle" lang="zh-Hant">' + esc(g.title) + '</div><div class="gsum">' + esc(g.sum) + '</div>' +
+      '<div class="badges"><span class="badge plain">' + LV_NAME[g.lv] + '</span>' + (g.lv !== 'TW' && g.tw ? '<span class="badge">대만 참고</span>' : '') + '</div></div>';
+    h += '<div class="sense"><p class="gdesc">' + esc(g.desc) + '</p>';
+    g.ex.forEach(function (x) {
+      h += '<div class="ex"><button class="say" data-act="say" data-t="' + esc(x.zh) + '" aria-label="예문 듣기">' +
+        '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg></button>' +
+        '<div class="zh" lang="zh-Hant">' + segment(x.zh) + '</div><div class="tr">' + esc(x.ko) + '</div></div>';
+    });
+    if (g.tw) h += '<p class="twnote"><b>대만 · 본토 차이</b> ' + esc(g.tw) + '</p>';
+    h += '</div>';
+    var words = [];
+    g.keys.forEach(function (k) { if (INDEX[k]) words.push(INDEX[k][0]); });
+    if (words.length) h += '<h2 class="sec">관련 단어</h2><div class="list">' + words.map(rowHtml).join('') + '</div>';
+    $('#gcard').innerHTML = h;
   }
 
   // ---------- 그 밖의 화면 ----------
@@ -386,6 +448,7 @@
     });
     var screen = 'search', sameHash = lastHash === location.hash;
     if (segs[0] === 'w' && segs[1]) screen = 'entry';
+    else if (segs[0] === 'g') screen = segs[1] !== undefined ? 'gcard' : 'grammar';
     else if (segs[0] === 'fav' || segs[0] === 'hist' || segs[0] === 'mine') screen = segs[0];
     if (!sameHash && current) scrollPos[current] = window.scrollY;
 
@@ -398,12 +461,16 @@
     if (screen === 'fav') renderFavs();
     if (screen === 'hist') renderHist();
     if (screen === 'mine') renderMine();
+    if (screen === 'grammar') renderGrammar();
+    if (screen === 'gcard') renderGCard(+segs[1]);
 
-    ['search', 'entry', 'fav', 'hist', 'mine'].forEach(function (s) { $('#screen-' + s).hidden = s !== screen; });
+    ['search', 'entry', 'grammar', 'gcard', 'fav', 'hist', 'mine'].forEach(function (s) { $('#screen-' + s).hidden = s !== screen; });
+    var navOf = { entry: 'search', gcard: 'grammar' };
     Array.prototype.forEach.call(document.querySelectorAll('#nav a'), function (a) {
-      a.classList.toggle('on', a.dataset.nav === (screen === 'entry' ? 'search' : screen));
+      a.classList.toggle('on', a.dataset.nav === (navOf[screen] || screen));
     });
-    if (!sameHash) window.scrollTo(0, screen === 'entry' ? 0 : (scrollPos[screen + location.hash] || 0));
+    var detail = screen === 'entry' || screen === 'gcard';
+    if (!sameHash) window.scrollTo(0, detail ? 0 : (scrollPos[screen + location.hash] || 0));
     current = screen + location.hash;
     lastHash = location.hash;
   }
@@ -437,6 +504,13 @@
     Array.prototype.forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); });
     renderSearch();
   });
+  $('#gfilters').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    gfilter = b.dataset.gf;
+    Array.prototype.forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); });
+    renderGrammar();
+    window.scrollTo(0, 0);
+  });
   $('#nav').addEventListener('click', function (ev) {
     var a = ev.target.closest('a');
     if (a && a.dataset.nav === 'search' && current.indexOf('search') === 0 && !activeCat) { $('#q').focus(); $('#q').select(); }
@@ -449,6 +523,7 @@
     var act = b.dataset.act;
     if (act === 'back') { if (history.length > 1) history.back(); else location.hash = '#/'; }
     if (act === 'say-entry') speak(entryWord);
+    if (act === 'say') speak(b.dataset.t);
     if (act === 'fav') {
       var had = FAVS.some(function (f) { return f.t === entryWord; });
       FAVS = FAVS.filter(function (f) { return f.t !== entryWord; });
