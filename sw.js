@@ -1,8 +1,8 @@
 // 한 번 열어 본 뒤에는 인터넷이 없어도 사전이 열리도록 파일을 기기에 저장해 둡니다.
 // data/cedict-data.js(영어 참고 사전)를 새로 만들었을 때는 아래 CACHE 이름의 숫자를 올려 주세요.
-var CACHE = 'twko-v3';
+var CACHE = 'twko-v4';
 var CORE = ['./', 'index.html', 'style.css', 'app.js', 'icon.svg', 'icon-192.png', 'icon-512.png', 'manifest.json',
-  'data/ko-data.js', 'data/ko-data-2.js'];
+  'data/ko-data.js', 'data/ko-data-2.js', 'data/ko-data-3.js', 'data/ko-data-4.js', 'data/grammar-data.js'];
 var BIG = 'data/cedict-data.js';
 
 self.addEventListener('install', function (e) {
