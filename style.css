@@ -137,6 +137,10 @@ button.sec.fold[aria-expanded="true"] + .chips { padding-top: 0; }
 .help summary { padding: 12px 14px; cursor: pointer; color: var(--text); font-size: 14px; }
 .help div { padding: 0 14px 12px; line-height: 1.7; }
 .help b { color: var(--text); }
+.help .btnrow { display: flex; margin: 10px 0 0; }
+.help .btnrow button { color: var(--text); }
+#voicestatus { margin: 10px 0 0; white-space: pre-wrap; word-break: break-all; font: 12px/1.6 ui-monospace, Consolas, monospace; color: var(--text); }
+#voicestatus:empty { display: none; }
 
 /* 내 단어 */
 .pad { padding: 16px; }
