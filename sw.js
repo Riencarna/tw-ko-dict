@@ -1,6 +1,6 @@
 // 한 번 열어 본 뒤에는 인터넷이 없어도 사전이 열리도록 파일을 기기에 저장해 둡니다.
 // data/cedict-data.js(영어 참고 사전)를 새로 만들었을 때는 아래 CACHE 이름의 숫자를 올려 주세요.
-var CACHE = 'twko-v4';
+var CACHE = 'twko-v5';
 var CORE = ['./', 'index.html', 'style.css', 'app.js', 'icon.svg', 'icon-192.png', 'icon-512.png', 'manifest.json',
   'data/ko-data.js', 'data/ko-data-2.js', 'data/ko-data-3.js', 'data/ko-data-4.js', 'data/grammar-data.js'];
 var BIG = 'data/cedict-data.js';
@@ -29,6 +29,7 @@ self.addEventListener('fetch', function (e) {
     e.respondWith(caches.match(e.request).then(function (hit) { return hit || fetch(e.request).then(put); }));
   } else {
     // 작은 파일: 인터넷이 되면 새 버전을 받고, 안 되면 저장해 둔 것을 쓴다.
-    e.respondWith(fetch(e.request).then(put).catch(function () { return caches.match(e.request, { ignoreSearch: true }); }));
+    // (cache: 'no-cache' = 브라우저에 남은 옛 파일을 쓰지 않고 서버에 새 버전이 있는지 매번 확인)
+    e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(put).catch(function () { return caches.match(e.request, { ignoreSearch: true }); }));
   }
 });
