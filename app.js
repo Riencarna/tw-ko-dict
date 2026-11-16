@@ -351,9 +351,9 @@
     }
     return out;
   }
-  function segment(text) {   // 예문 속 단어를 누를 수 있게 한다.
+  function segment(text) {   // 예문 속 단어를 누를 수 있게 한다(누르면 그 자리에서 뜻 창이 뜬다).
     return tokenize(text).map(function (k) {
-      return k.han ? '<a href="' + wordHref(k.w) + '">' + esc(k.w) + '</a>' : esc(k.w);
+      return k.han ? '<a class="pw" href="' + wordHref(k.w) + '" data-c="' + esc(k.w) + '">' + esc(k.w) + '</a>' : esc(k.w);
     }).join('');
   }
   function exHtml(x) {
@@ -407,13 +407,26 @@
     hits.sort(function (a, b) { return a.s - b.s; });
     return hits.slice(0, 60).map(function (x) { return x.e; });
   }
+  // 표제어의 글자를 하나씩 누를 수 있게 만든다(누르면 그 글자의 뜻이 아래에 뜬다).
+  function headCharsHtml(t, p) {
+    var syl = p ? p.split(' ') : [], cs = chars(t), n = 0, i = 0;
+    cs.forEach(function (c) { if (HAN.test(c)) n++; });
+    var match = n && n === syl.length;
+    return cs.map(function (c, idx) {
+      if (!HAN.test(c)) return esc(c);
+      var s = match ? syl[i++] : '';
+      return '<button class="hc pw' + (s ? ' t' + toneOf(s) : '') + '" data-act="peek" data-c="' + c + '" data-i="' + idx + '" data-s="' + esc(s) + '">' + c + '</button>';
+    }).join('');
+  }
   function renderEntry() {
     var t = entryWord, list = INDEX[t] || [], first = list[0];
-    var h = '<div class="ehead"><div class="hz" lang="zh-Hant">' + (first ? hanziHtml(t, first.p) : esc(t)) + '</div>';
+    var multi = chars(t).length > 1;
+    var h = '<div class="ehead"><div class="hz" lang="zh-Hant">' +
+      (multi ? headCharsHtml(t, first ? first.p : '') : (first ? hanziHtml(t, first.p) : esc(t))) + '</div>';
     if (first && first.p) h += '<div class="py">' + pinyinHtml(first.p) + '</div><div class="zy">' + esc(zhuyin(first.p)) + '</div>';
+    if (multi && !UI.peeked) h += '<div class="hint">글자를 누르면 그 글자의 뜻을 볼 수 있습니다</div>';
     h += '</div>';
     var cs = chars(t).filter(function (c, i, a) { return HAN.test(c) && a.indexOf(c) === i; });
-    var multi = chars(t).length > 1;
     if (!multi && entryTab === 'chars') entryTab = 'def';
     h += '<div class="tabs"><button data-etab="def" class="' + (entryTab === 'def' ? 'on' : '') + '">뜻풀이</button>' +
       (multi ? '<button data-etab="chars" class="' + (entryTab === 'chars' ? 'on' : '') + '">글자</button>' : '') +
@@ -440,6 +453,75 @@
     }
     $('#entry').innerHTML = h;
     $('#favbtn').classList.toggle('on', FAVS.some(function (f) { return f.t === t; }));
+  }
+
+  // ---------- 뜻 미리 보기 창 ----------
+  // 표제어의 글자나 예문 속 단어(.pw)를 누르면, 화면을 옮기지 않고 그 자리에서 뜻을 띄운다.
+  var peek = null;   // 떠 있는 창: { box: '#entry' 또는 '#gcard', n: 그 안에서 몇 번째 .pw인지, w: 띄운 단어 }
+  function closePeek() {
+    if (!peek) return;
+    peek = null;
+    $('#peek').hidden = true;
+    document.body.classList.remove('peek-open');
+    var on = document.querySelector('.pw.on');
+    if (on) on.classList.remove('on');
+  }
+  function togglePeek(el) { if (el.classList.contains('on')) closePeek(); else openPeek(el, true); }
+  function refreshPeek() {   // 창을 띄워 둔 채 화면이 다시 그려지면(사전 로딩 완료 등) 내용을 새로 채운다
+    if (!peek) return;
+    var el = $(peek.box).querySelectorAll('.pw')[peek.n];
+    if (el && el.dataset.c === peek.w) openPeek(el, false); else closePeek();
+  }
+  function openPeek(btn, reveal) {
+    var c = btn.dataset.c, syl = (btn.dataset.s || '').toLowerCase(), key = pinKey(syl);
+    var single = chars(c).length === 1;
+    // 이 단어 안에서 읽히는 발음의 풀이를 맨 위에 둔다(예: 銀行의 行은 háng).
+    function rank(e) { return !syl ? 0 : (e.p.toLowerCase() === syl ? 0 : (e.k === key || e.km === key ? 1 : 2)); }
+    var list = (INDEX[c] || []).map(function (e, i) { return { e: e, r: rank(e), i: i }; })
+      .sort(function (a, b) { return a.r - b.r || a.i - b.i; }).map(function (x) { return x.e; });
+    var first = list[0], SHOW = 4;
+    var h = '<div class="pk-head"><span class="hz' + (single ? '' : ' multi') + '" lang="zh-Hant">' + (first ? hanziHtml(c, first.p) : esc(c)) + '</span>' +
+      '<span class="grow"></span>' +
+      '<button class="icon" data-act="say" data-t="' + esc(c) + '" aria-label="발음 듣기"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/></svg></button>' +
+      '<button class="icon" data-act="peek-close" aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<div class="pk-body">';
+    if (!list.length) {
+      h += '<p class="pk-none">' + (ceState === 'loading' ? '사전을 불러오는 중입니다…' : (single ? '수록되지 않은 글자입니다.' : '수록되지 않은 단어입니다.')) + '</p>';
+    } else {
+      h += list.slice(0, SHOW).map(function (e) {
+        var isKo = e.ko && e.ko.length;
+        return '<div class="pk-sense">' +
+          (e.p ? '<div class="reading">' + pinyinHtml(e.p) + '<span class="zy">' + esc(zhuyin(e.p)) + '</span></div>' : '') +
+          '<div class="pk-def' + (isKo ? ' ko' : '') + '">' + (isTw(e) ? '<span class="tag tw">台</span>' : '') +
+          (isKo ? '' : '<span class="tag en">EN</span>') + esc(shortDef(e)) + '</div></div>';
+      }).join('');
+    }
+    h += '</div>';
+    var box = btn.closest('#gcard') ? '#gcard' : '#entry';
+    var here = box === '#entry' && c === entryWord;   // 지금 보고 있는 표제어 자신이면 "자세히 보기"가 필요 없다
+    if (list.length && !here) {
+      h += '<a class="pk-more" href="' + wordHref(c) + '">‘' + esc(c) + '’ 자세히 보기' +
+        (list.length > SHOW ? ' (풀이 ' + list.length + '개)' : '') + ' ›</a>';
+    }
+    var el = $('#peek');
+    el.innerHTML = h;
+    el.hidden = false;
+    el.querySelector('.pk-body').scrollTop = 0;
+    var on = document.querySelector('.pw.on');
+    if (on) on.classList.remove('on');
+    btn.classList.add('on');
+    peek = { box: box, n: Array.prototype.indexOf.call($(box).querySelectorAll('.pw'), btn), w: c };
+    document.body.style.setProperty('--pk-h', el.offsetHeight + 'px');
+    document.body.classList.add('peek-open');
+    if (reveal) {   // 누른 단어가 창에 가려지면 보이는 곳까지 화면을 올린다
+      var gap = btn.getBoundingClientRect().bottom - el.getBoundingClientRect().top + 16;
+      if (gap > 0) window.scrollBy({ top: gap, behavior: 'smooth' });
+    }
+    if (btn.classList.contains('hc') && !UI.peeked) {
+      UI.peeked = true; save('twko_ui', UI);
+      var hint = document.querySelector('.ehead .hint');
+      if (hint) hint.remove();
+    }
   }
   function addHistory(t) {
     if (!INDEX[t]) return;
@@ -498,6 +580,8 @@
     else if (segs[0] === 'g') screen = segs[1] !== undefined ? 'gcard' : 'grammar';
     else if (segs[0] === 'fav' || segs[0] === 'hist' || segs[0] === 'mine') screen = segs[0];
     if (!sameHash && current) scrollPos[current] = window.scrollY;
+    if (!sameHash) closePeek();
+    if (screen !== 'search' && hw.open) hwClose();
 
     if (screen === 'search') { activeCat = segs[0] === 'c' ? (segs[1] || '') : ''; renderSearch(); }
     if (screen === 'entry') {
@@ -520,6 +604,7 @@
     if (!sameHash) window.scrollTo(0, detail ? 0 : (scrollPos[screen + location.hash] || 0));
     current = screen + location.hash;
     lastHash = location.hash;
+    refreshPeek();
   }
   window.addEventListener('hashchange', route);
 
@@ -598,17 +683,180 @@
     if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 150); } else go();
   }
 
+  // ---------- 필기 입력 ----------
+  // 인식 엔진(lib/hanzilookup.min.js)과 획 데이터(data/hanzi-strokes.js)는 필기 판을 처음 열 때 불러온다.
+  var hw = { open: false, state: 'idle', strokes: [], cur: null, cands: [], ctx: null, matcher: null, w: 0, h: 0, last: null };
+  var HW_STEP = 5;   // 이 거리(px)보다 가까운 점은 기록하지 않는다(점이 너무 촘촘하면 획의 꺾임을 잘못 읽는다)
+  function loadScript(src, ok, fail) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = ok; s.onerror = fail;
+    document.body.appendChild(s);
+  }
+  function hwLoad() {
+    if (hw.state === 'loading' || hw.state === 'ready') return;
+    hw.state = 'loading';
+    hwCands();
+    var fail = function () { hw.state = 'failed'; hwCands(); };
+    loadScript('lib/hanzilookup.min.js', function () {
+      loadScript('data/hanzi-strokes.js', function () {
+        try {
+          var d = window.HW_DATA;
+          window.HW_DATA = null;
+          d.substrokes = window.HanziLookup.decodeCompact(d.substrokes);
+          window.HanziLookup.data.mmah = d;
+          hw.matcher = new window.HanziLookup.Matcher('mmah');
+          hw.state = 'ready';
+          hwRecognize();
+        } catch (e) { fail(); }
+      }, fail);
+    }, fail);
+  }
+  function hwOpen() {
+    closePeek();
+    hw.open = true;
+    $('#hw').hidden = false;
+    $('#hwbtn').setAttribute('aria-pressed', 'true');
+    $('#q').blur();   // 휴대폰 자판을 내린다
+    hwSize();
+    document.body.style.setProperty('--hw-h', $('#hw').offsetHeight + 'px');
+    document.body.classList.add('hw-open');
+    if (hw.state === 'idle' || hw.state === 'failed') hwLoad(); else hwCands();
+  }
+  function hwClose() {
+    hw.open = false;
+    hw.strokes = []; hw.cur = null; hw.cands = [];
+    $('#hw').hidden = true;
+    $('#hwbtn').setAttribute('aria-pressed', 'false');
+    document.body.classList.remove('hw-open');
+  }
+  function hwReset() { hw.strokes = []; hw.cur = null; hw.cands = []; hwDraw(); hwCands(); }
+  function hwSize() {
+    var c = $('#hwpad'), r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    if (!r.width) return;
+    hw.w = r.width; hw.h = r.height;
+    c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr);
+    hw.ctx = c.getContext('2d');
+    hw.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    hwDraw();
+  }
+  function hwInk() {
+    var x = hw.ctx;
+    x.setLineDash([]); x.lineWidth = 5; x.lineCap = 'round'; x.lineJoin = 'round';
+    x.strokeStyle = getComputedStyle(document.body).color;
+  }
+  function hwDraw() {
+    var x = hw.ctx;
+    if (!x) return;
+    x.clearRect(0, 0, hw.w, hw.h);
+    // 가운데를 잡기 쉽게 흐린 십자 안내선을 긋는다
+    x.setLineDash([4, 6]); x.lineWidth = 1; x.lineCap = 'butt';
+    x.strokeStyle = getComputedStyle($('#hwpad')).borderTopColor;
+    x.beginPath();
+    x.moveTo(hw.w / 2, 8); x.lineTo(hw.w / 2, hw.h - 8);
+    x.moveTo(8, hw.h / 2); x.lineTo(hw.w - 8, hw.h / 2);
+    x.stroke();
+    hwInk();
+    hw.strokes.concat(hw.cur ? [hw.cur] : []).forEach(function (s) {
+      x.beginPath();
+      x.moveTo(s[0][0], s[0][1]);
+      if (s.length === 1) x.lineTo(s[0][0] + 0.1, s[0][1]);
+      for (var i = 1; i < s.length; i++) x.lineTo(s[i][0], s[i][1]);
+      x.stroke();
+    });
+  }
+  function hwCands() {
+    var el = $('#hwcands'), msg = '';
+    if (hw.state === 'loading') msg = '필기 인식을 준비하는 중입니다…';
+    else if (hw.state === 'failed') msg = '필기 인식 데이터를 불러오지 못했습니다.<button type="button" data-act="hw-retry">다시 시도</button>';
+    else if (!hw.strokes.length) msg = '아래 칸에 한 글자씩 써 주세요. 맞는 글자를 누르면 검색창에 들어갑니다.';
+    else if (!hw.cands.length) msg = '비슷한 글자를 찾지 못했습니다. 획순대로 또박또박 써 보세요.';
+    if (msg) { el.innerHTML = '<span class="msg">' + msg + '</span>'; return; }
+    el.innerHTML = hw.cands.map(function (c) {
+      return '<button type="button" class="hwc' + (c.known ? '' : ' dim') + '" data-act="hw-pick" data-c="' + c.ch + '" lang="zh-Hant">' + c.ch + '</button>';
+    }).join('');
+    el.scrollLeft = 0;
+  }
+  function hwRecognize() {
+    if (hw.state !== 'ready') return;
+    if (!hw.strokes.length) { hw.cands = []; hwCands(); return; }
+    // 엔진은 256×256 칸에 쓴 글씨를 기준으로 만들어졌으므로 좌표를 그 크기로 맞춘다
+    var k = 256 / hw.h;
+    var strokes = hw.strokes.map(function (s) {
+      var pts = s.map(function (p) { return [p[0] * k, p[1] * k]; });
+      if (pts.length === 1) pts.push([pts[0][0] + 3, pts[0][1] + 3]);   // 콕 찍은 점
+      return pts;
+    });
+    try {
+      hw.matcher.match(new window.HanziLookup.AnalyzedCharacter(strokes), 16, function (matches) {
+        var seen = {}, list = [];
+        matches.forEach(function (m) {
+          if (seen[m.character]) return;
+          seen[m.character] = 1;
+          list.push({ ch: m.character, known: !!INDEX[m.character] });
+        });
+        // 대만 사전이므로 사전에 표제어(번체자)로 실린 글자를 앞에 둔다(영어 참고 사전까지 다 불러온 뒤에만)
+        if (ceState === 'ready') {
+          list = list.filter(function (c) { return c.known; }).concat(list.filter(function (c) { return !c.known; }));
+        } else list.forEach(function (c) { c.known = true; });
+        hw.cands = list.slice(0, 10);
+        hwCands();
+      });
+    } catch (e) { hw.cands = []; hwCands(); }
+  }
+  (function () {
+    var pad = $('#hwpad');
+    function pos(ev) { var r = pad.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
+    function add(p, force) {
+      var s = hw.cur, l = s[s.length - 1], dx = p[0] - l[0], dy = p[1] - l[1];
+      if (force ? (dx || dy) : (dx * dx + dy * dy >= HW_STEP * HW_STEP)) s.push(p);
+    }
+    pad.addEventListener('pointerdown', function (ev) {
+      if (ev.button > 0 || hw.cur) return;
+      ev.preventDefault();
+      try { pad.setPointerCapture(ev.pointerId); } catch (e) { /* 지원하지 않는 기기 */ }
+      hw.cur = [pos(ev)]; hw.last = hw.cur[0]; hw.pid = ev.pointerId;
+      hwDraw();
+    });
+    pad.addEventListener('pointermove', function (ev) {
+      if (!hw.cur || ev.pointerId !== hw.pid) return;
+      ev.preventDefault();
+      var p = pos(ev), x = hw.ctx;
+      hwInk();
+      x.beginPath(); x.moveTo(hw.last[0], hw.last[1]); x.lineTo(p[0], p[1]); x.stroke();
+      hw.last = p;
+      add(p, false);
+    });
+    function end(ev) {
+      if (!hw.cur || ev.pointerId !== hw.pid) return;
+      if (ev.type === 'pointerup') add(pos(ev), true);
+      hw.strokes.push(hw.cur);
+      hw.cur = null;
+      hwDraw();
+      hwRecognize();
+      if (hw.state !== 'ready') hwCands();
+    }
+    pad.addEventListener('pointerup', end);
+    pad.addEventListener('pointercancel', end);
+    window.addEventListener('resize', function () { if (hw.open) { hwSize(); document.body.style.setProperty('--hw-h', $('#hw').offsetHeight + 'px'); } });
+  })();
+
   // ---------- 이벤트 ----------
   var timer;
+  function queryChanged() {
+    clearTimeout(timer);
+    if (activeCat) { history.replaceState(null, '', '#/'); activeCat = ''; lastHash = location.hash; current = 'search' + location.hash; }
+    renderSearch();
+    window.scrollTo(0, 0);
+  }
   $('#q').addEventListener('input', function () {
     clearTimeout(timer);
-    timer = setTimeout(function () {
-      if (activeCat) { history.replaceState(null, '', '#/'); activeCat = ''; lastHash = location.hash; current = 'search' + location.hash; }
-      renderSearch();
-      window.scrollTo(0, 0);
-    }, 150);
+    timer = setTimeout(queryChanged, 150);
   });
-  $('#clear').addEventListener('click', function () { $('#q').value = ''; renderSearch(); $('#q').focus(); });
+  $('#clear').addEventListener('click', function () { $('#q').value = ''; renderSearch(); if (!hw.open) $('#q').focus(); });
+  // 휴대폰에서는 자판과 필기 판이 함께 뜨면 화면이 가려지므로, 검색창을 누르면 필기 판을 닫는다
+  $('#q').addEventListener('focus', function () {
+    if (hw.open && window.matchMedia && window.matchMedia('(pointer: coarse)').matches) hwClose();
+  });
   $('#filters').addEventListener('click', function (ev) {
     var b = ev.target.closest('button'); if (!b) return;
     filter = b.dataset.filter;
@@ -628,10 +876,27 @@
   });
   var prefill = null;
   document.body.addEventListener('click', function (ev) {
+    // 뜻 창이 떠 있을 때 바깥을 누르면 닫는다
+    if (peek && !ev.target.closest('#peek') && !ev.target.closest('.pw')) closePeek();
+    // 예문 속 단어: 화면을 옮기지 않고 뜻 창을 띄운다(Ctrl·Shift와 함께 누르면 원래 링크대로 연다)
+    var pw = ev.target.closest('a.pw');
+    if (pw && !ev.ctrlKey && !ev.metaKey && !ev.shiftKey) { ev.preventDefault(); togglePeek(pw); return; }
     var tab = ev.target.closest('button[data-etab]');
     if (tab) { entryTab = tab.dataset.etab; renderEntry(); return; }
     var b = ev.target.closest('button[data-act]'); if (!b) return;
     var act = b.dataset.act;
+    if (act === 'peek') togglePeek(b);
+    if (act === 'peek-close') closePeek();
+    if (act === 'hw-toggle') { if (hw.open) hwClose(); else hwOpen(); }
+    if (act === 'hw-close') hwClose();
+    if (act === 'hw-retry') hwLoad();
+    if (act === 'hw-undo') { hw.strokes.pop(); hwDraw(); hwRecognize(); }
+    if (act === 'hw-clear') hwReset();
+    if (act === 'hw-pick') { $('#q').value += b.dataset.c; hwReset(); queryChanged(); }
+    if (act === 'hw-back') {
+      if (hw.strokes.length) hwReset();   // 쓰던 글자가 있으면 그것부터 지운다
+      else { $('#q').value = chars($('#q').value).slice(0, -1).join(''); queryChanged(); }
+    }
     if (act === 'back') { if (history.length > 1) history.back(); else location.hash = '#/'; }
     if (act === 'say-entry') speak(entryWord);
     if (act === 'say') speak(b.dataset.t);
