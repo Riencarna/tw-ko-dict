@@ -10,7 +10,7 @@ window.KO_RAW += String.raw`
 考慮|kao3 lv4|고려하다; 생각해 보다
 願意|yuan4 yi4|기꺼이 ~하다; 원하다
 敢|gan3|감히 ~하다; ~할 용기가 있다
-必須|bi4 xu1|반드시 ~해야 한다
+必須|bi4 xu1|반드시 ~해야 한다|||'반드시 ~해야 한다'(규칙·의무). '~할 필요 없다'는 不必·不用.
 安排|an1 pai2|일정을 잡다; 배정하다
 完成|wan2 cheng2|완성하다; 끝내다
 繼續|ji4 xu4|계속하다
@@ -20,7 +20,7 @@ window.KO_RAW += String.raw`
 堅持|jian1 chi2|끝까지 하다; 고집하다
 嘗試|chang2 shi4|시도하다
 學會|xue2 hui4|배워서 할 줄 알게 되다
-幫助|bang1 zhu4|돕다; 도움
+幫助|bang1 zhu4|돕다; 도움|||'도움, 돕다'의 조금 격식 있는 말.
 支持|zhi1 chi2|지지하다; 응원하다
 反對|fan3 dui4|반대하다
 贊成|zan4 cheng2|찬성하다
@@ -65,7 +65,7 @@ window.KO_RAW += String.raw`
 倒|dao4|따르다; 쏟다; 버리다
 加|jia1|더하다; 넣다
 減|jian3|빼다; 줄이다
-算|suan4|계산하다; ~인 셈이다
+算|suan4|계산하다; ~인 셈이다|||'계산하다'뿐 아니라 '~인 셈이다'로 많이 쓴다. 算了 = 됐어, 그만두자.
 數|shu3|세다
 量|liang2|재다; 측정하다
 選擇|xuan3 ze2|선택하다; 선택
@@ -84,14 +84,14 @@ window.KO_RAW += String.raw`
 找到|zhao3 dao4|찾아내다
 遇到|yu4 dao4|만나다; 마주치다
 碰到|peng4 dao4|마주치다; 닿다
-看到|kan4 dao4|보다; 보이다
+看到|kan4 dao4|보다; 보이다|||보아서 '보이다, 봤다'(결과). 看見과 거의 같은 뜻이고 말할 때는 看到가 더 흔하다.
 聽到|ting1 dao4|듣다; 들리다
 聽說|ting1 shuo1|듣자 하니; ~라고 들었다
-看見|kan4 jian4|보다; 보이다
+看見|kan4 jian4|보다; 보이다|||看到와 거의 같은 뜻. 말할 때는 看到를 더 많이 쓴다.
 聞|wen2|냄새를 맡다
 嚐|chang2|맛보다||嘗
 摸|mo1|만지다
-感到|gan3 dao4|느끼다
+感到|gan3 dao4|느끼다|||'(감정을) 느끼다'의 글말(感到很高興). 말할 때는 覺得를 쓴다.
 表示|biao3 shi4|나타내다; 뜻을 밝히다
 表達|biao3 da2|표현하다
 表演|biao3 yan3|공연하다; 공연
@@ -154,14 +154,14 @@ window.KO_RAW += String.raw`
 進去|jin4 qu4|들어가다
 出來|chu1 lai2|나오다
 過來|guo4 lai2|이쪽으로 오다
-起來|qi3 lai2|일어나다
+起來|qi3 lai2|일어나다|||앉거나 누운 자리에서 일어나다. 동사 뒤에서는 '~하기 시작하다', '~해 보니'의 뜻(看起來).
 經過|jing1 guo4|지나가다; 거치다; 경과
 通過|tong1 guo4|통과하다; 합격하다
 到達|dao4 da2|도착하다
 出現|chu1 xian4|나타나다
 消失|xiao1 shi1|사라지다
 存在|cun2 zai4|존재하다
-活|huo2|살다; 살아 있다
+活|huo2|살다; 살아 있다|||'살아 있다, 살다'(생명).
 死|si3|죽다
 養|yang3|기르다; 키우다
 種|zhong4|심다; 재배하다
@@ -179,7 +179,7 @@ window.KO_RAW += String.raw`
 叫|jiao4|부르다; ~라고 하다; 시키다
 喊|han3|외치다; 소리쳐 부르다
 念|nian4|소리 내어 읽다; (학교를) 다니다; 잔소리하다
-背|bei4|외우다; 암기하다
+背|bei1|(등에) 메다; 짊어지다|||背包 = 배낭. 등·외우다의 뜻일 때는 bei4로 읽는다.
 抄|chao1|베끼다
 畫|hua4|그리다; 그림
 讀書|du2 shu1|공부하다; 책을 읽다|||대만에서는 "공부하다"를 讀書 또는 念書라고 한다(본토 學習).
@@ -189,10 +189,10 @@ window.KO_RAW += String.raw`
 問路|wen4 lu4|길을 묻다
 搭訕|da1 shan4|말을 걸다; 작업 걸다
 交朋友|jiao1 peng2 you3|친구를 사귀다
-談|tan2|이야기하다; 논의하다
+談|tan2|이야기하다; 논의하다|||진지하게 이야기를 나누다·논의하다(談一談). 談戀愛 = 연애하다. 가벼운 수다는 聊天.
 談戀愛|tan2 lian4 ai4|연애하다
 分手|fen1 shou3|헤어지다
-告白|gao4 bai2|고백하다||表白
+告白|gao4 bai2|고백하다||~表白|
 求婚|qiu2 hun1|청혼하다
 抱怨|bao4 yuan4|불평하다
 開玩笑|kai1 wan2 xiao4|농담하다
@@ -214,7 +214,7 @@ window.KO_RAW += String.raw`
 複雜|fu4 za2|복잡하다
 容易|rong2 yi4|쉽다
 困難|kun4 nan2|어렵다; 어려움
-清楚|qing1 chu3|분명하다; 잘 알다
+清楚|qing1 chu3|분명하다; 잘 알다|||한국 한자어 '청초하다'와 달리 '분명하다, 잘 알다'를 뜻한다(聽不清楚 = 잘 안 들린다).
 模糊|mo2 hu2|흐릿하다; 모호하다
 明顯|ming2 xian3|뚜렷하다; 명백하다
 仔細|zi3 xi4|꼼꼼하다; 자세하다
@@ -245,7 +245,7 @@ window.KO_RAW += String.raw`
 真實|zhen1 shi2|진실하다; 실제의
 實際|shi2 ji4|실제적이다; 실제
 具體|ju4 ti3|구체적이다
-直接|zhi2 jie1|직접적이다; 바로
+直接|zhi2 jie1|직접적이다; 바로|||'중간을 거치지 않고 곧장'. 直接去 = (어디 들르지 않고) 바로 가다. 시간의 '곧'에는 쓰지 않는다.
 主動|zhu3 dong4|주동적이다; 먼저 나서다
 被動|bei4 dong4|수동적이다
 熟悉|shou2 xi1|잘 알다; 익숙하다|||熟은 대만에서 주로 shou2로 읽는다.
@@ -258,7 +258,7 @@ window.KO_RAW += String.raw`
 亂|luan4|어지럽다; 함부로
 破|po4|깨지다; 찢어지다; 낡다
 現代|xian4 dai4|현대; 현대적이다
-古老|gu3 lao3|오래되다; 고풍스럽다
+古老|gu3 lao3|오래되다; 고풍스럽다|||역사가 '오래되다'(古老的廟).
 國際|guo2 ji4|국제; 국제적이다
 當地|dang1 di4|현지
 本地|ben3 di4|이 지역; 현지
@@ -295,7 +295,7 @@ window.KO_RAW += String.raw`
 勤勞|qin2 lao2|부지런하다
 忙碌|mang2 lu4|바쁘다
 悠閒|you1 xian2|한가롭다; 여유롭다
-自在|zi4 zai4|편안하다; 자유롭다
+自在|zi4 zai4|편안하다; 자유롭다|||남 눈치 볼 것 없이 편하고 자유롭다.
 自然|zi4 ran2|자연스럽다; 자연
 神奇|shen2 qi2|신기하다
 好笑|hao3 xiao4|웃기다; 우습다
@@ -322,12 +322,12 @@ window.KO_RAW += String.raw`
 首先|shou3 xian1|우선; 먼저
 其次|qi2 ci4|그다음; 둘째로
 接著|jie1 zhe5|이어서
-後來|hou4 lai2|나중에; 그 후에
-於是|yu2 shi4|그래서; 이에
-因此|yin1 ci3|따라서; 그래서
+後來|hou4 lai2|나중에; 그 후에|||과거 이야기 속의 '그 뒤에'만 뜻한다. 앞으로의 일에는 以後를 쓴다.
+於是|yu2 shi4|그래서; 이에|||앞일에 이어 '그래서 (그 결과) ~했다'처럼 이미 일어난 일의 흐름을 이야기할 때 쓴다.
+因此|yin1 ci3|따라서; 그래서|||'따라서, 그러므로'. 글말·공식적인 느낌.
 否則|fou3 ze2|그렇지 않으면
-不然|bu4 ran2|안 그러면; 아니면
-要不然|yao4 bu4 ran2|안 그러면; 아니면
+不然|bu4 ran2|안 그러면; 아니면|||'그렇지 않으면'(경고·대안). 要不然과 같은 뜻이며 짧게 不然이라고 많이 한다.
+要不然|yao4 bu4 ran2|안 그러면; 아니면|||不然과 같은 뜻.
 總之|zong3 zhi1|요컨대; 아무튼
 例如|li4 ru2|예를 들면
 比如|bi3 ru2|예컨대
@@ -339,7 +339,7 @@ window.KO_RAW += String.raw`
 按照|an4 zhao4|~에 따라
 隨著|sui2 zhe5|~에 따라; ~와 함께
 由於|you2 yu2|~때문에; ~로 인해
-向|xiang4|~을 향해; ~에게
+向|xiang4|~을 향해; ~에게|||'~을 향해', 글말에서 '~에게'(向老師請教). 말할 때는 跟을 더 많이 쓴다.
 替|ti4|~을 대신하여; ~을 위해
 除非|chu2 fei1|~하지 않는 한
 無論|wu2 lun4|~에 관계없이
@@ -356,13 +356,13 @@ window.KO_RAW += String.raw`
 原來|yuan2 lai2|알고 보니; 원래
 本來|ben3 lai2|원래; 본래
 仍然|reng2 ran2|여전히
-重新|chong2 xin1|다시; 새로
+重新|chong2 xin1|다시; 새로|||'처음부터 새로 다시'. 再가 단순한 반복이라면 重新은 고쳐서 새로 하는 느낌(重新開始).
 親自|qin1 zi4|직접; 몸소
 故意|gu4 yi4|일부러
 順便|shun4 bian4|~하는 김에
 偶爾|ou3 er3|가끔
-經常|jing1 chang2|자주; 늘
-往往|wang3 wang3|흔히; 종종
+經常|jing1 chang2|자주; 늘|||常常과 같고 조금 더 글말 느낌.
+往往|wang3 wang3|흔히; 종종|||경험상 '대개 그렇게 되더라'는 경향. 앞으로의 일이나 의지에는 쓰지 않는다.
 曾經|ceng2 jing1|일찍이; 예전에
 漸漸|jian4 jian4|점점
 忽然|hu1 ran2|갑자기
@@ -370,11 +370,11 @@ window.KO_RAW += String.raw`
 盡量|jin4 liang4|되도록; 가능한 한
 好好|hao3 hao3|잘; 제대로
 慢慢|man4 man4|천천히
-稍微|shao1 wei2|조금; 약간|||微는 대만에서 wei2로 읽는다(본토 wei1).
+稍微|shao1 wei2|조금; 약간|||微는 대만에서 wei2로 읽는다(본토 wei1). 동사·형용사 앞에 오고, 뒤에 一點·一下를 함께 붙이는 일이 많다(稍微等一下).
 相當|xiang1 dang1|상당히; 꽤
-十分|shi2 fen1|매우; 대단히
+十分|shi2 fen1|매우; 대단히|||非常과 비슷하지만 글말 느낌이 있다.
 超級|chao1 ji2|엄청; 슈퍼
-有點|you3 dian3|조금; 약간(못마땅한 느낌)
+有點|you3 dian3|조금; 약간(못마땅한 느낌)|||형용사 앞에서 '좀 ~하다'(대개 못마땅함). 有點貴 = 좀 비싸다. 부탁·비교는 一點.
 根本|gen1 ben3|전혀; 아예; 근본
 絕對|jue2 dui4|절대로; 틀림없이
 千萬|qian1 wan4|제발; 절대로; 천만
@@ -384,7 +384,7 @@ window.KO_RAW += String.raw`
 左右|zuo3 you4|~쯤; 좌우
 以上|yi3 shang4|이상
 以下|yi3 xia4|이하
-之前|zhi1 qian2|~전에; 이전
+之前|zhi1 qian2|~전에; 이전|||以前과 거의 같지만 특정한 일·시점의 '~전에'를 가리킬 때 더 자주 쓴다(上班之前).
 之後|zhi1 hou4|~후에; 이후
 之間|zhi1 jian1|~사이
 其中|qi2 zhong1|그중에
@@ -421,9 +421,9 @@ window.KO_RAW += String.raw`
 房價|fang2 jia4|집값
 失業|shi1 ye4|실업; 실직하다
 移民|yi2 min2|이민; 이민자
-移工|yi2 gong1|이주 노동자||外勞
-觀光|guan1 guang1|관광||旅遊
-觀光客|guan1 guang1 ke4|관광객||遊客
+移工|yi2 gong1|이주 노동자|||예전에는 外勞라고 했지만 지금은 移工이라고 부른다.
+觀光|guan1 guang1|관광||~旅遊|
+觀光客|guan1 guang1 ke4|관광객||~遊客|
 產業|chan3 ye4|산업
 企業|qi4 ye4|기업|||企는 대만에서 qi4로 읽는다(본토 qi3).
 工業|gong1 ye4|공업
@@ -467,7 +467,7 @@ window.KO_RAW += String.raw`
 寄放|ji4 fang4|맡겨 두다|||可以寄放行李嗎？ = 짐을 맡길 수 있나요?
 攻略|gong1 lve4|공략; 여행 꿀팁 정리
 自拍|zi4 pai1|셀카를 찍다
-合照|he2 zhao4|함께 사진을 찍다; 단체 사진||合影
+合照|he2 zhao4|함께 사진을 찍다; 단체 사진||~合影|
 明信片|ming2 xin4 pian4|엽서
 郵票|you2 piao4|우표
 外幣|wai4 bi4|외화
@@ -574,71 +574,139 @@ window.KO_RAW += String.raw`
 快遞|kuai4 di4|택배; 퀵 배송
 室內|shi4 nei4|실내
 室外|shi4 wai4|실외
-#생활 회화
+#생활 회화 > 쇼핑
 這個多少錢|zhe4 ge5 duo1 shao3 qian2|이거 얼마예요?
 可以刷卡嗎|ke3 yi3 shua1 ka3 ma5|카드 돼요?
 可以便宜一點嗎|ke3 yi3 pian2 yi2 yi4 dian3 ma5|좀 깎아 주실 수 있어요?
 我要這個|wo3 yao4 zhe4 ge5|이걸로 주세요
-我要外帶|wo3 yao4 wai4 dai4|포장해 주세요
-我要內用|wo3 yao4 nei4 yong4|먹고 갈게요
-不要辣|bu2 yao4 la4|안 맵게 해 주세요
-不要香菜|bu2 yao4 xiang1 cai4|고수 빼 주세요
-不用袋子|bu2 yong4 dai4 zi5|봉투 필요 없어요
+我考慮一下|wo3 kao3 lv4 yi2 xia4|좀 생각해 볼게요
+我再看看|wo3 zai4 kan4 kan4|좀 더 둘러볼게요
+有別的顏色嗎|you3 bie2 de5 yan2 se4 ma5|다른 색 있어요?
+有大一點的嗎|you3 da4 yi4 dian3 de5 ma5|더 큰 것 있어요?
+可以試穿嗎|ke3 yi3 shi4 chuan1 ma5|입어 봐도 돼요?
+老闆這個怎麼賣|lao3 ban3 zhe4 ge5 zen3 me5 mai4|사장님, 이거 어떻게 팔아요?|||야시장·시장에서 값을 물을 때 쓴다.
+#생활 회화 > 편의점
 要袋子嗎|yao4 dai4 zi5 ma5|봉투 필요하세요?
+不用袋子|bu2 yong4 dai4 zi5|봉투 필요 없어요
+幫我裝袋|bang1 wo3 zhuang1 dai4|봉투에 담아 주세요
 要加熱嗎|yao4 jia1 re4 ma5|데워 드릴까요?
 有會員嗎|you3 hui4 yuan2 ma5|회원이세요?
 發票要印出來嗎|fa1 piao4 yao4 yin4 chu1 lai2 ma5|영수증 출력해 드릴까요?
+要載具嗎|yao4 zai4 ju4 ma5|(영수증을) 휴대폰 바코드에 저장하세요?(점원이 묻는 말)|||載具가 없으면 不用이라고 하면 된다.
+有統一編號嗎|you3 tong3 yi1 bian1 hao4 ma5|영수증에 사업자 번호 넣으세요?(점원이 묻는 말)|||개인이면 不用이라고 하면 된다.
+可以用悠遊卡嗎|ke3 yi3 yong4 you1 you2 ka3 ma5|교통카드로 결제돼요?
+我要儲值|wo3 yao4 chu2 zhi2|(교통카드) 충전해 주세요
+我要取貨|wo3 yao4 qu3 huo4|물건 찾으러 왔어요(편의점 택배 수령)|||휴대폰 번호 끝자리나 이름을 함께 말한다.
+#생활 회화 > 음료 주문
+我要一杯珍珠奶茶|wo3 yao4 yi4 bei1 zhen1 zhu1 nai3 cha2|버블티 한 잔 주세요
+甜度冰塊呢|tian2 du4 bing1 kuai4 ne5|당도랑 얼음은요?(점원이 묻는 말)|||甜度(당도): 全糖·少糖·半糖·微糖·無糖. 冰塊(얼음): 正常冰·少冰·微冰·去冰·常溫·熱.
+半糖少冰|ban4 tang2 shao3 bing1|당도 반, 얼음 적게
+微糖去冰|wei2 tang2 qu4 bing1|당도 조금, 얼음 빼고
+無糖常溫|wu2 tang2 chang2 wen1|당도 없이, 상온으로
+要大杯還是中杯|yao4 da4 bei1 hai2 shi4 zhong1 bei1|큰 컵이요, 중간 컵이요?(점원이 묻는 말)
+可以加珍珠嗎|ke3 yi3 jia1 zhen1 zhu1 ma5|타피오카 추가돼요?
+我要熱的|wo3 yao4 re4 de5|따뜻한 걸로 주세요
+#생활 회화 > 식당·야시장
+請問幾位|qing3 wen4 ji3 wei4|몇 분이세요?(점원이 묻는 말)
+兩位|liang3 wei4|두 명이요
+要等多久|yao4 deng3 duo1 jiu3|얼마나 기다려야 해요?
+我要訂位|wo3 yao4 ding4 wei4|자리를 예약하고 싶어요
 請給我菜單|qing3 gei3 wo3 cai4 dan1|메뉴판 주세요
 有推薦的嗎|you3 tui1 jian4 de5 ma5|추천 메뉴 있어요?
+這個辣嗎|zhe4 ge5 la4 ma5|이거 매워요?
+小辣就好|xiao3 la4 jiu4 hao3|조금만 맵게 해 주세요
+不要辣|bu2 yao4 la4|안 맵게 해 주세요
+不要香菜|bu2 yao4 xiang1 cai4|고수 빼 주세요
 我吃素|wo3 chi1 su4|저는 채식해요
 我對花生過敏|wo3 dui4 hua1 sheng1 guo4 min3|땅콩 알레르기가 있어요
+一份多少錢|yi2 fen4 duo1 shao3 qian2|1인분에 얼마예요?
+再給我一碗白飯|zai4 gei3 wo3 yi4 wan3 bai2 fan4|밥 한 공기 더 주세요
+我要內用|wo3 yao4 nei4 yong4|먹고 갈게요
+我要外帶|wo3 yao4 wai4 dai4|포장해 주세요
+可以打包嗎|ke3 yi3 da3 bao1 ma5|남은 거 싸 갈 수 있어요?
+要先付錢嗎|yao4 xian1 fu4 qian2 ma5|먼저 계산하나요?
 請幫我結帳|qing3 bang1 wo3 jie2 zhang4|계산해 주세요
 可以分開付嗎|ke3 yi3 fen1 kai1 fu4 ma5|따로 계산할 수 있어요?
+我請你|wo3 qing3 ni3|제가 살게요
+#생활 회화 > 길·교통
 洗手間在哪裡|xi3 shou3 jian1 zai4 na3 li3|화장실이 어디예요?
 請問怎麼走|qing3 wen4 zen3 me5 zou3|어떻게 가나요?
 走路要多久|zou3 lu4 yao4 duo1 jiu3|걸어서 얼마나 걸려요?
+這附近有捷運站嗎|zhe4 fu4 jin4 you3 jie2 yun4 zhan4 ma5|이 근처에 지하철역 있어요?
 這班車有到台北車站嗎|zhe4 ban1 che1 you3 dao4 tai2 bei3 che1 zhan4 ma5|이 차 타이베이역 가요?
+要在哪裡換車|yao4 zai4 na3 li3 huan4 che1|어디서 갈아타요?
+下一站是哪裡|xia4 yi2 zhan4 shi4 na3 li3|다음 역은 어디예요?
+末班車幾點|mo4 ban1 che1 ji3 dian3|막차가 몇 시예요?
 我要去這裡|wo3 yao4 qu4 zhe4 li3|여기로 가 주세요(주소를 보여 주며)
+請到台北車站|qing3 dao4 tai2 bei3 che1 zhan4|타이베이역으로 가 주세요(택시)
+大概多少錢|da4 gai4 duo1 shao3 qian2|대략 얼마 나와요?
+可以開後車廂嗎|ke3 yi3 kai1 hou4 che1 xiang1 ma5|트렁크 열어 주실 수 있어요?
 請在這裡停車|qing3 zai4 zhe4 li3 ting2 che1|여기서 세워 주세요
 我迷路了|wo3 mi2 lu4 le5|길을 잃었어요
+#생활 회화 > 숙소
+我有訂房|wo3 you3 ding4 fang2|방을 예약했어요
+可以寄放行李嗎|ke3 yi3 ji4 fang4 xing2 li3 ma5|짐을 맡길 수 있어요?
+幾點退房|ji3 dian3 tui4 fang2|체크아웃은 몇 시예요?
+#생활 회화 > 병원·약국
+我不舒服|wo3 bu4 shu1 fu2|몸이 안 좋아요
+我想看醫生|wo3 xiang3 kan4 yi1 sheng1|진료받고 싶어요
+我要掛號|wo3 yao4 gua4 hao4|접수하려고요(병원)
+我第一次來|wo3 di4 yi1 ci4 lai2|처음 왔어요
+有帶健保卡嗎|you3 dai4 jian4 bao3 ka3 ma5|건강보험 카드 가져오셨어요?(직원이 묻는 말)
+我發燒了|wo3 fa1 shao1 le5|열이 나요
+我喉嚨痛|wo3 hou2 long2 tong4|목이 아파요
+我拉肚子|wo3 la1 du4 zi5|설사해요
+這個藥一天吃幾次|zhe4 ge5 yao4 yi4 tian1 chi1 ji3 ci4|이 약은 하루에 몇 번 먹어요?
+飯前還是飯後吃|fan4 qian2 hai2 shi4 fan4 hou4 chi1|식전에 먹어요, 식후에 먹어요?
+有沒有止痛藥|you3 mei2 you3 zhi3 tong4 yao4|진통제 있어요?
+#생활 회화 > 집 구하기
+房租一個月多少|fang2 zu1 yi2 ge5 yue4 duo1 shao3|월세가 한 달에 얼마예요?
+押金要幾個月|ya1 jin1 yao4 ji3 ge5 yue4|보증금은 몇 달 치예요?|||대만은 보통 두 달 치 월세를 보증금으로 낸다.
+有包水電嗎|you3 bao1 shui3 dian4 ma5|수도·전기 요금 포함이에요?
+管理費另外算嗎|guan3 li3 fei4 ling4 wai4 suan4 ma5|관리비는 따로예요?
+有冷氣嗎|you3 leng3 qi4 ma5|에어컨 있어요?
+可以養寵物嗎|ke3 yi3 yang3 chong3 wu4 ma5|반려동물 키워도 돼요?
+要簽多久的約|yao4 qian1 duo1 jiu3 de5 yue1|계약은 얼마나 해야 해요?
+什麼時候可以搬進來|shen2 me5 shi2 hou4 ke3 yi3 ban1 jin4 lai2|언제 입주할 수 있어요?
+#생활 회화 > 은행·통신
+我想買上網卡|wo3 xiang3 mai3 shang4 wang3 ka3|데이터 유심을 사고 싶어요
+有吃到飽的方案嗎|you3 chi1 dao4 bao3 de5 fang1 an4 ma5|무제한 데이터 요금제 있어요?|||吃到飽는 '뷔페'뿐 아니라 '무제한'의 뜻으로도 쓴다.
+我想開戶|wo3 xiang3 kai1 hu4|계좌를 만들고 싶어요
+要帶什麼證件|yao4 dai4 shen2 me5 zheng4 jian4|어떤 신분증을 가져가야 해요?
+我要換錢|wo3 yao4 huan4 qian2|환전하고 싶어요
+今天的匯率是多少|jin1 tian1 de5 hui4 lv4 shi4 duo1 shao3|오늘 환율이 얼마예요?
+#생활 회화 > 말이 안 통할 때
 我聽不懂|wo3 ting1 bu4 dong3|못 알아듣겠어요
 請說慢一點|qing3 shuo1 man4 yi4 dian3|천천히 말해 주세요
 請再說一次|qing3 zai4 shuo1 yi2 ci4|다시 한번 말해 주세요
 這個中文怎麼說|zhe4 ge5 zhong1 wen2 zen3 me5 shuo1|이건 중국어로 뭐라고 해요?
 這是什麼意思|zhe4 shi4 shen2 me5 yi4 si5|이게 무슨 뜻이에요?
 我的中文不太好|wo3 de5 zhong1 wen2 bu2 tai4 hao3|저는 중국어를 잘 못해요
-我是韓國人|wo3 shi4 han2 guo2 ren2|저는 한국 사람이에요
 你會說英文嗎|ni3 hui4 shuo1 ying1 wen2 ma5|영어 할 줄 아세요?
 可以幫我一下嗎|ke3 yi3 bang1 wo3 yi2 xia4 ma5|좀 도와주실 수 있어요?
 可以幫我拍照嗎|ke3 yi3 bang1 wo3 pai1 zhao4 ma5|사진 좀 찍어 주실래요?
-我要訂位|wo3 yao4 ding4 wei4|자리를 예약하고 싶어요
-我有訂房|wo3 you3 ding4 fang2|방을 예약했어요
-可以寄放行李嗎|ke3 yi3 ji4 fang4 xing2 li3 ma5|짐을 맡길 수 있어요?
-幾點退房|ji3 dian3 tui4 fang2|체크아웃은 몇 시예요?
-我不舒服|wo3 bu4 shu1 fu2|몸이 안 좋아요
-我想看醫生|wo3 xiang3 kan4 yi1 sheng1|진료받고 싶어요
-請叫救護車|qing3 jiao4 jiu4 hu4 che1|구급차를 불러 주세요
-我的錢包不見了|wo3 de5 qian2 bao1 bu2 jian4 le5|지갑을 잃어버렸어요
-救命|jiu4 ming4|살려 주세요!
-我考慮一下|wo3 kao3 lv4 yi2 xia4|좀 생각해 볼게요
-我再看看|wo3 zai4 kan4 kan4|좀 더 둘러볼게요
-有別的顏色嗎|you3 bie2 de5 yan2 se4 ma5|다른 색 있어요?
-有大一點的嗎|you3 da4 yi4 dian3 de5 ma5|더 큰 것 있어요?
-可以試穿嗎|ke3 yi3 shi4 chuan1 ma5|입어 봐도 돼요?
-幫我裝袋|bang1 wo3 zhuang1 dai4|봉투에 담아 주세요
+#생활 회화 > 사람 사귀기
 很高興認識你|hen3 gao1 xing4 ren4 shi4 ni3|만나서 반가워요
 你叫什麼名字|ni3 jiao4 shen2 me5 ming2 zi4|이름이 뭐예요?
+我是韓國人|wo3 shi4 han2 guo2 ren2|저는 한국 사람이에요
+你是哪裡人|ni3 shi4 na3 li3 ren2|어디 출신이에요?
+你來台灣多久了|ni3 lai2 tai2 wan1 duo1 jiu3 le5|대만에 온 지 얼마나 됐어요?
 你住哪裡|ni3 zhu4 na3 li3|어디 살아요?
 你做什麼工作|ni3 zuo4 shen2 me5 gong1 zuo4|무슨 일 하세요?
+可以加你的LINE嗎|ke3 yi3 jia1 ni3 de5 LINE ma5|라인 친구 추가해도 돼요?|||대만에서는 메신저로 LINE을 가장 많이 쓴다.
 要不要一起吃飯|yao4 bu2 yao4 yi4 qi3 chi1 fan4|같이 밥 먹을래요?
-我請你|wo3 qing3 ni3|제가 살게요
+有空一起出去玩|you3 kong4 yi4 qi3 chu1 qu4 wan2|시간 될 때 같이 놀러 가요
 下次再約|xia4 ci4 zai4 yue1|다음에 또 만나요
+#생활 회화 > 헤어질 때·긴급
 到家跟我說|dao4 jia1 gen1 wo3 shuo1|집에 도착하면 연락해
 路上小心|lu4 shang4 xiao3 xin1|조심히 가세요
 保重|bao3 zhong4|몸조심하세요
 早點休息|zao3 dian3 xiu1 xi2|일찍 쉬세요
 祝你順利|zhu4 ni3 shun4 li4|잘되길 바라요
 一路順風|yi2 lu4 shun4 feng1|잘 다녀오세요(가는 길 평안하길)
+請叫救護車|qing3 jiao4 jiu4 hu4 che1|구급차를 불러 주세요
+我的錢包不見了|wo3 de5 qian2 bao1 bu2 jian4 le5|지갑을 잃어버렸어요
+救命|jiu4 ming4|살려 주세요!
 #교통
 捷運站|jie2 yun4 zhan4|지하철역||地鐵站
 火車站|huo3 che1 zhan4|기차역
@@ -684,7 +752,7 @@ window.KO_RAW += String.raw`
 項鍊|xiang4 lian4|목걸이||項鏈
 戒指|jie4 zhi3|반지
 耳環|er3 huan2|귀걸이
-太陽眼鏡|tai4 yang2 yan3 jing4|선글라스||墨鏡
+太陽眼鏡|tai4 yang2 yan3 jing4|선글라스||~墨鏡|
 隱形眼鏡|yin3 xing2 yan3 jing4|콘택트렌즈
 #IT·통신
 電話|dian4 hua4|전화
