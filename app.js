@@ -1,6 +1,11 @@
 (function () {
   'use strict';
 
+  // ---------- 버전 ----------
+  // 고쳐서 올릴 때마다 올린다. sw.js의 CACHE 이름도 'twko-' + 같은 번호로 맞춘다.
+  // tools/deploy.py는 바뀐 파일이 있는데 번호가 그대로면 끝자리를 자동으로 올리고 날짜를 바꾼다.
+  var VERSION = '1.1.0', VERSION_DATE = '2026-11-24';
+
   // ---------- 도우미 ----------
   var $ = function (s) { return document.querySelector(s); };
   function esc(s) {
@@ -328,7 +333,8 @@
       h += '</div>';
     }
     h += '<a class="more" href="#/p">처음이라면: 성조 · 주음부호 · 대만 발음 안내 보기 ›</a>';
-    h += '<p class="status">' + esc(statusText()) + '<br>검색 예: <span lang="zh-Hant">捷運</span> · 택시 · lese · ㄐㄧㄝˊ ㄩㄣˋ · pineapple</p>';
+    h += '<p class="status">' + esc(statusText()) + '<br>검색 예: <span lang="zh-Hant">捷運</span> · 택시 · lese · ㄐㄧㄝˊ ㄩㄣˋ · pineapple' +
+      '<br>버전 ' + VERSION + ' (' + VERSION_DATE + ')</p>';
     return h;
   }
   function renderSearch() {
@@ -962,6 +968,7 @@
     if (act === 'say-entry') speak(entryWord);
     if (act === 'say') speak(b.dataset.t);
     if (act === 'voice-test') speak('你好，歡迎來到台灣。');
+    if (act === 'reload') location.reload();   // 홈 화면 앱에는 새로 고침 버튼이 없어서 따로 둔다
     if (act === 'voice-status') {
       var st = voiceStatus();
       $('#voicestatus').textContent = st;
@@ -1036,6 +1043,7 @@
   });
 
   // ---------- 시작 ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.appver'), function (el) { el.textContent = VERSION + ' (' + VERSION_DATE + ')'; });
   buildIndex();
   route();
   setTimeout(loadCedict, 50);
