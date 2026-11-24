@@ -167,6 +167,18 @@ body.hw-open { padding-bottom: calc(var(--nav-h) + var(--hw-h, 330px) + env(safe
 .twnote b { display: block; color: var(--accent); font-size: 12px; margin-bottom: 2px; }
 #nav a { min-width: 0; }
 
+/* 발음 버튼 상태: 준비 중 · 재생 중 · 실패 */
+.ex .say { border-radius: 8px; }
+button.say-wait, button.say-on { color: var(--accent) !important; background: var(--accent-soft) !important; border-color: var(--accent) !important; }
+button.say-wait { animation: say-blink 1s ease-in-out infinite; }
+button.say-on svg path:first-child { fill: currentColor; }
+button.say-on svg path + path { animation: say-wave .8s ease-in-out infinite; }
+button.say-fail { color: var(--t1) !important; border-color: var(--t1) !important; animation: say-shake .3s; }
+@keyframes say-blink { 50% { opacity: .5; } }
+@keyframes say-wave { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+@keyframes say-shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { button.say-wait, button.say-on svg path + path, button.say-fail { animation: none; } }
+
 /* 여는 화면 */
 #splash { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: grid; place-items: center;
   padding: 24px; transition: opacity .35s; cursor: pointer; }
@@ -229,6 +241,11 @@ button.sec.fold[aria-expanded="true"] + .chips { padding-top: 0; }
 .help div { padding: 0 14px 12px; line-height: 1.7; }
 .help b { color: var(--text); }
 .help summary .ver { float: right; font-size: 12px; color: var(--muted); }
+.help .t1 { color: var(--t1); } .help .t2 { color: var(--t2); } .help .t3 { color: var(--t3); } .help .t4 { color: var(--t4); } .help .t5 { color: var(--t5); }
+.help .toneline { display: block; }
+.help .toneline b { display: inline-block; min-width: 3.2em; }
+.help .toneline span { margin-left: 6px; font-family: var(--han); }
+.help a { color: var(--accent); }
 .help summary .ver b { font-weight: 400; color: var(--muted); }
 .help .btnrow { display: flex; margin: 10px 0 0; }
 .help .btnrow button { color: var(--text); }
