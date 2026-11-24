@@ -195,8 +195,8 @@ button.say-fail { color: var(--t1) !important; border-color: var(--t1) !importan
   padding: 24px; transition: opacity .35s; cursor: pointer; }
 #splash.hide { opacity: 0; pointer-events: none; }
 .sp-box { width: 100%; max-width: 320px; text-align: center; }
-.sp-logo { font-family: var(--han); font-size: 56px; font-weight: 600; color: var(--accent); line-height: 1.1; }
-.sp-name { margin-top: 8px; font-size: 16px; font-weight: 700; }
+.sp-logo { display: block; width: 96px; height: 96px; margin: 0 auto; border-radius: 22.4%; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+.sp-name { margin-top: 14px; font-size: 16px; font-weight: 700; }
 .sp-ver { margin-top: 2px; font-size: 13px; color: var(--muted); min-height: 1.5em; }
 .sp-line { margin-top: 22px; font-size: 15px; line-height: 1.55; min-height: 1.55em; }
 .sp-line.sp-sub { margin-top: 8px; font-size: 13px; color: var(--muted); }

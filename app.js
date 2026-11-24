@@ -4,7 +4,7 @@
   // ---------- 버전 ----------
   // 고쳐서 올릴 때마다 올린다. sw.js의 CACHE 이름도 'twko-' + 같은 번호로 맞춘다.
   // tools/deploy.py는 바뀐 파일이 있는데 번호가 그대로면 끝자리를 자동으로 올리고 날짜를 바꾼다.
-  var VERSION = '1.3.0', VERSION_DATE = '2026-11-24';
+  var VERSION = '1.3.1', VERSION_DATE = '2026-11-24';
 
   // ---------- 도우미 ----------
   var $ = function (s) { return document.querySelector(s); };
