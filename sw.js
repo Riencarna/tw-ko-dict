@@ -1,6 +1,7 @@
 // 한 번 열어 본 뒤에는 인터넷이 없어도 사전이 열리도록 파일을 기기에 저장해 둡니다.
-// data/cedict-data.js(영어 참고 사전)를 새로 만들었을 때는 아래 CACHE 이름의 숫자를 올려 주세요.
-var CACHE = 'twko-v10';
+// CACHE 이름은 'twko-' + app.js의 VERSION과 같게 둡니다(tools/deploy.py가 함께 올립니다).
+// 이름이 바뀌면 새 버전을 설치하면서 옛 저장분을 지우고, data/cedict-data.js(영어 참고 사전)도 새로 받습니다.
+var CACHE = 'twko-1.1.0';
 var CORE = ['./', 'index.html', 'style.css', 'app.js', 'icon.svg', 'icon-192.png', 'icon-512.png', 'manifest.json',
   'lib/hanzilookup.min.js', 'data/hanzi-strokes.js',
   'data/ko-data.js', 'data/ko-data-2.js', 'data/ko-data-3.js', 'data/ko-data-4.js', 'data/ko-data-5.js', 'data/grammar-data.js', 'data/examples-data.js', 'data/examples-data-2.js', 'data/examples-data-3.js'];
