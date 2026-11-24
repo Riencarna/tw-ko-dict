@@ -2,8 +2,8 @@
 // "#분류" 줄 아래의 단어는 그 분류에 속합니다.  형식: 번체|병음(대만 발음)|한국어 뜻||본토 표현|메모
 window.KO_RAW += String.raw`
 #사람·가족
-丈夫|zhang4 fu1|남편
-妻子|qi1 zi3|아내
+丈夫|zhang4 fu1|남편|||'남편'의 글말·공식적인 말. 말할 때는 先生·老公. 한국 한자어 '장부(사나이)'와 달리 '남편'을 뜻한다.
+妻子|qi1 zi3|아내|||'아내'의 글말·공식적인 말. 말할 때는 太太·老婆.
 兒子|er2 zi5|아들
 女兒|nv3 er2|딸
 孩子|hai2 zi5|아이; 자녀
@@ -39,7 +39,7 @@ window.KO_RAW += String.raw`
 年紀|nian2 ji4|나이
 生日|sheng1 ri4|생일
 性別|xing4 bie2|성별
-個性|ge4 xing4|성격; 개성||性格
+個性|ge4 xing4|성격; 개성||~性格|
 結婚|jie2 hun1|결혼하다
 離婚|li2 hun1|이혼하다
 單身|dan1 shen1|독신; 싱글
@@ -69,10 +69,10 @@ window.KO_RAW += String.raw`
 運動員|yun4 dong4 yuan2|운동선수
 軍人|jun1 ren2|군인
 公務員|gong1 wu4 yuan2|공무원
-農夫|nong2 fu1|농부||農民
+農夫|nong2 fu1|농부||~農民|
 商人|shang1 ren2|상인; 사업가
-秘書|mi4 shu1|비서
-經理|jing1 li3|매니저; 부장
+秘書|mi4 shu1|비서|||대만 교육부 표준 표기는 祕書.
+經理|jing1 li3|매니저; 부장|||한국 한자어 '경리(회계 담당)'와 뜻이 다르다. 經理는 '매니저, 부장'급 관리자이고, 회계 담당은 會計.
 總經理|zong3 jing1 li3|사장; 총지배인
 董事長|dong3 shi4 zhang3|회장; 이사장
 助理|zhu4 li3|보조; 어시스턴트
@@ -95,7 +95,7 @@ window.KO_RAW += String.raw`
 上個月|shang4 ge5 yue4|지난달
 這個月|zhe4 ge5 yue4|이번 달
 下個月|xia4 ge5 yue4|다음 달
-上禮拜|shang4 li3 bai4|지난주||上星期 / 上周
+上禮拜|shang4 li3 bai4|지난주||~上星期 / 上周|
 這禮拜|zhe4 li3 bai4|이번 주
 下禮拜|xia4 li3 bai4|다음 주
 平常|ping2 chang2|평소; 보통
@@ -116,10 +116,10 @@ window.KO_RAW += String.raw`
 暫時|zhan4 shi2|잠시; 임시로|||暫은 대만에서 zhan4으로 읽는다(본토 zan4).
 永遠|yong3 yuan3|영원히
 一輩子|yi2 bei4 zi5|평생
-立刻|li4 ke4|즉시; 바로
+立刻|li4 ke4|즉시; 바로|||'즉시, 당장'. 馬上보다 급하고 단호한 느낌.
 隨時|sui2 shi2|언제든지; 수시로
 準時|zhun3 shi2|정시에; 시간을 잘 지키다
-提早|ti2 zao3|앞당기다; 미리||提前
+提早|ti2 zao3|앞당기다; 미리||~提前|
 日期|ri4 qi2|날짜
 時間|shi2 jian1|시간
 學期|xue2 qi2|학기
@@ -128,7 +128,7 @@ window.KO_RAW += String.raw`
 寒假|han2 jia4|겨울 방학
 季節|ji4 jie2|계절
 秒|miao3|초
-生活|sheng1 huo2|생활; 살다
+生活|sheng1 huo2|생활; 살다|||'생활(하다)', 삶의 방식(在台灣生活). 사는 곳을 말할 때는 住.
 #장소
 城市|cheng2 shi4|도시
 鄉下|xiang1 xia4|시골
@@ -149,7 +149,7 @@ window.KO_RAW += String.raw`
 美容院|mei3 rong2 yuan4|미용실
 文具店|wen2 ju4 dian4|문구점
 藥妝店|yao4 zhuang1 dian4|드러그스토어
-眼鏡行|yan3 jing4 hang2|안경점||眼鏡店
+眼鏡行|yan3 jing4 hang2|안경점||~眼鏡店|
 花店|hua1 dian4|꽃집
 動物園|dong4 wu4 yuan2|동물원
 遊樂園|you2 le4 yuan2|놀이공원||遊樂場
@@ -223,8 +223,8 @@ window.KO_RAW += String.raw`
 浪費|lang4 fei4|낭비하다
 花錢|hua1 qian2|돈을 쓰다
 #음식·음료
-菜|cai4|요리; 반찬; 채소
-蔬菜|shu1 cai4|채소
+菜|cai4|요리; 반찬; 채소|||'요리, 반찬'이 가장 흔한 뜻(點菜 = 요리를 주문하다). 채소만 가리킬 때는 蔬菜·青菜.
+蔬菜|shu1 cai4|채소|||채소를 통틀어 이르는 말. 식당 메뉴에서는 青菜.
 肉|rou4|고기
 蝦|xia1|새우
 螃蟹|pang2 xie4|게
@@ -272,7 +272,7 @@ window.KO_RAW += String.raw`
 拉麵|la1 mian4|라멘
 咖哩|ka1 li3|카레||咖喱
 泡菜|pao4 cai4|김치; 절임 채소
-料理|liao4 li3|요리(음식)||菜|일본어의 영향으로 대만에서 널리 쓴다. 韓式料理 = 한식.
+料理|liao4 li3|요리(음식)||~菜|일본어의 영향으로 대만에서 널리 쓴다. 韓式料理 = 한식.
 口味|kou3 wei4|맛; 입맛
 味道|wei4 dao4|맛; 냄새
 香|xiang1|향기롭다; 고소하다
@@ -289,7 +289,7 @@ window.KO_RAW += String.raw`
 礦泉水|kuang4 quan2 shui3|생수
 氣泡水|qi4 pao4 shui3|탄산수
 可樂|ke3 le4|콜라
-汽水|qi4 shui3|사이다; 탄산음료
+汽水|qi4 shui3|사이다; 탄산음료|||한국의 '사이다'처럼 투명한 것만이 아니라 탄산음료 전체를 이른다.
 酒|jiu3|술
 紅酒|hong2 jiu3|레드 와인
 餐具|can1 ju4|식기; 수저
@@ -314,11 +314,11 @@ window.KO_RAW += String.raw`
 燙傷|tang4 shang1|화상을 입다
 中暑|zhong4 shu3|더위를 먹다
 失眠|shi1 mian2|불면증; 잠을 못 자다
-便秘|bian4 mi4|변비
+便秘|bian4 bi4|변비|||대만 발음은 bian4 bi4(본토 bian4 mi4). 대만 교육부 표준 표기는 便祕.
 胃痛|wei4 tong4|위가 아프다
 牙痛|ya2 tong4|이가 아프다
 喉嚨痛|hou2 long2 tong4|목이 아프다
-鼻塞|bi2 sai1|코가 막히다
+鼻塞|bi2 se4|코가 막히다|||대만 교육부 사전의 읽기는 bi2 se4. 구어에서는 bi2 sai1로도 읽는다.
 打噴嚏|da3 pen1 ti4|재채기하다
 流感|liu2 gan3|독감
 確診|que4 zhen3|확진되다
@@ -334,7 +334,7 @@ window.KO_RAW += String.raw`
 肝|gan1|간
 骨頭|gu3 tou2|뼈
 皮膚|pi2 fu1|피부
-血|xie3|피
+血|xie3|피|||대만에서는 xie3로 읽는다(본토 표준음 xue4). 流血·抽血·高血壓의 血도 마찬가지.
 手指|shou3 zhi3|손가락
 手臂|shou3 bi4|팔
 肩膀|jian1 bang3|어깨
@@ -344,15 +344,15 @@ window.KO_RAW += String.raw`
 手術|shou3 shu4|수술
 住院|zhu4 yuan4|입원하다
 出院|chu1 yuan4|퇴원하다
-健檢|jian4 jian3|건강 검진||體檢|健康檢查의 줄임말.
+健檢|jian4 jian3|건강 검진||~體檢|健康檢查의 줄임말.
 抽血|chou1 xie3|채혈하다
-處方箋|chu3 fang1 jian1|처방전||處方
+處方箋|chu3 fang1 jian1|처방전||~處方|
 藥水|yao4 shui3|물약
 藥膏|yao4 gao1|연고
 止痛藥|zhi3 tong4 yao4|진통제
 感冒藥|gan3 mao4 yao4|감기약
 胃藥|wei4 yao4|위장약
-維他命|wei2 ta1 ming4|비타민||維生素
+維他命|wei2 ta1 ming4|비타민||~維生素|
 體溫|ti3 wen1|체온
 體重|ti3 zhong4|체중
 身高|shen1 gao1|키
@@ -433,7 +433,7 @@ window.KO_RAW += String.raw`
 簡體字|jian3 ti3 zi4|간체자
 閱讀|yue4 du2|읽기; 독해
 聽力|ting1 li4|듣기; 청력
-口說|kou3 shuo1|말하기||口語
+口說|kou3 shuo1|말하기||~口語|
 寫作|xie3 zuo4|쓰기; 작문
 程度|cheng2 du4|수준; 정도||水平
 初級|chu1 ji2|초급
