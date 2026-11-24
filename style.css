@@ -167,6 +167,19 @@ body.hw-open { padding-bottom: calc(var(--nav-h) + var(--hw-h, 330px) + env(safe
 .twnote b { display: block; color: var(--accent); font-size: 12px; margin-bottom: 2px; }
 #nav a { min-width: 0; }
 
+/* 여는 화면 */
+#splash { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: grid; place-items: center;
+  padding: 24px; transition: opacity .35s; cursor: pointer; }
+#splash.hide { opacity: 0; pointer-events: none; }
+.sp-box { width: 100%; max-width: 320px; text-align: center; }
+.sp-logo { font-family: var(--han); font-size: 56px; font-weight: 600; color: var(--accent); line-height: 1.1; }
+.sp-name { margin-top: 8px; font-size: 16px; font-weight: 700; }
+.sp-ver { margin-top: 2px; font-size: 13px; color: var(--muted); min-height: 1.5em; }
+.sp-line { margin-top: 22px; font-size: 15px; line-height: 1.55; min-height: 1.55em; }
+.sp-line.sp-sub { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.sp-tip { margin-top: 28px; font-size: 12px; color: var(--muted); }
+.netbtn { border: 0; background: none; color: var(--accent); font-size: inherit; padding: 0; cursor: pointer; text-decoration: underline; }
+
 /* 분류 목록의 상황별 머리줄(생활 회화) */
 .subsec { margin: 0; padding: 14px 16px 6px; font-size: 14px; color: var(--accent); background: var(--bar); border-bottom: 1px solid var(--line); }
 .subsec i { font-style: normal; font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 4px; }
