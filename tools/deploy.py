@@ -1,4 +1,5 @@
 # 바뀐 파일만 GitHub 저장소에 올립니다(GitHub Pages 배포용). git 없이 GitHub CLI(gh)만 씁니다.
+# 바뀐 파일은 모두 커밋 하나로 묶어 올리므로 GitHub Pages 배포도 한 번만 일어납니다.
 # 사용법: python -I tools/deploy.py <계정>/<저장소> [--dry-run]      (프로젝트 폴더에서 실행)
 #   --dry-run  무엇이 올라갈지와 버전만 보여 주고, 파일을 고치거나 올리지 않습니다.
 # 버전: 앱에 보이는 파일이 바뀌었는데 app.js의 VERSION이 올라가 있는 것과 같으면,
@@ -121,24 +122,62 @@ if dry:
     print("(--dry-run: 아무것도 고치거나 올리지 않았습니다)")
     sys.exit(0)
 
-changed = 0
-for path in local:
-    with open(os.path.join(root, path), "rb") as f:
-        data = f.read()
-    if remote.get(path) == blob_sha(data):
-        continue
-    body = {"message": ("Update " if path in remote else "Add ") + path,
-            "content": base64.b64encode(data).decode("ascii")}
-    if path in remote:
-        body["sha"] = remote[path]
-    code, out, err = gh(["-X", "PUT", f"repos/{repo}/contents/{path}"], body)
-    if code != 0:
-        print("FAILED", path, err.strip()[:300])
-        sys.exit(1)
-    changed += 1
-    print("uploaded", path, len(data))
+# ---------- 올리기: 바뀐 파일을 모두 모아 커밋 하나로 올린다 ----------
+# 파일마다 커밋을 따로 만들면 커밋마다 GitHub Pages 배포가 시작돼, 앞의 배포들이 취소되고
+# 대기열에서 오래 기다리게 된다. 그래서 Git 데이터 API로 한 번에 올린다.
+todo = [p for p in local if remote.get(p) != local_sha(p)]
+if not todo:
+    print("done: 바뀐 파일이 없습니다.")
+code, out, _ = gh([f"repos/{repo}/git/ref/heads/{branch}"])
+head = json.loads(out)["object"]["sha"] if code == 0 else None
 
-print("done:", changed, "file(s) uploaded,", len(local) - changed, "unchanged")
+if todo and head is None:
+    # 아직 커밋이 하나도 없는 빈 저장소(처음 올릴 때): 파일마다 올리는 예전 방식을 쓴다
+    for path in todo:
+        with open(os.path.join(root, path), "rb") as f:
+            data = f.read()
+        body = {"message": "Add " + path, "content": base64.b64encode(data).decode("ascii")}
+        code, out, err = gh(["-X", "PUT", f"repos/{repo}/contents/{path}"], body)
+        if code != 0:
+            print("FAILED", path, err.strip()[:300])
+            sys.exit(1)
+        print("uploaded", path, len(data))
+elif todo:
+    code, out, err = gh([f"repos/{repo}/git/commits/{head}"])
+    if code != 0:
+        print("FAILED: 마지막 커밋을 읽지 못했습니다.", err.strip()[:300])
+        sys.exit(1)
+    base_tree = json.loads(out)["tree"]["sha"]
+    entries = []
+    for path in todo:
+        with open(os.path.join(root, path), "rb") as f:
+            data = f.read()
+        code, out, err = gh(["-X", "POST", f"repos/{repo}/git/blobs"],
+                            {"content": base64.b64encode(data).decode("ascii"), "encoding": "base64"})
+        if code != 0:
+            print("FAILED", path, err.strip()[:300])
+            sys.exit(1)
+        entries.append({"path": path, "mode": "100644", "type": "blob", "sha": json.loads(out)["sha"]})
+        print("prepared", path, len(data))
+    code, out, err = gh(["-X", "POST", f"repos/{repo}/git/trees"], {"base_tree": base_tree, "tree": entries})
+    if code != 0:
+        print("FAILED: 파일 목록(tree)을 만들지 못했습니다.", err.strip()[:300])
+        sys.exit(1)
+    tree = json.loads(out)["sha"]
+    message = "Deploy %s (%d file%s): %s" % (ver, len(todo), "" if len(todo) == 1 else "s",
+                                             ", ".join(todo[:5]) + (" …" if len(todo) > 5 else ""))
+    code, out, err = gh(["-X", "POST", f"repos/{repo}/git/commits"], {"message": message, "tree": tree, "parents": [head]})
+    if code != 0:
+        print("FAILED: 커밋을 만들지 못했습니다.", err.strip()[:300])
+        sys.exit(1)
+    commit = json.loads(out)["sha"]
+    code, out, err = gh(["-X", "PATCH", f"repos/{repo}/git/refs/heads/{branch}"], {"sha": commit, "force": False})
+    if code != 0:
+        print("FAILED: 브랜치를 새 커밋으로 옮기지 못했습니다(그사이 다른 곳에서 올렸을 수 있음). 다시 실행해 주세요.", err.strip()[:300])
+        sys.exit(1)
+    print("committed", commit[:7], "—", message)
+
+print("done:", len(todo), "file(s) uploaded in one commit,", len(local) - len(todo), "unchanged")
 print("올린 버전: %s (%s) — 휴대폰 사전 첫 화면 맨 아래에 이 번호가 보이면 새 버전입니다." % (ver, ver_date))
 
 # GitHub Pages(휴대폰에서 여는 주소)가 꺼져 있으면 켠다.

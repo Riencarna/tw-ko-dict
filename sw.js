@@ -1,13 +1,13 @@
 // 한 번 열어 본 뒤에는 인터넷이 없어도 사전이 열리도록 파일을 기기에 저장해 둡니다.
 // CACHE 이름은 'twko-' + app.js의 VERSION과 같게 둡니다(tools/deploy.py가 함께 올립니다).
 // 이름이 바뀌면 새 버전을 설치하면서 옛 저장분을 지웁니다.
-var CACHE = 'twko-1.2.1';
+var CACHE = 'twko-1.3.0';
 // 10MB짜리 영어 참고 사전은 따로 저장해서 버전이 바뀌어도 다시 받지 않습니다.
 // data/cedict-data.js를 새로 만들었을 때만 아래 숫자를 올려 주세요.
 var BIG_CACHE = 'twko-cedict-1';
 var CORE = ['./', 'index.html', 'style.css', 'app.js', 'icon.svg', 'icon-192.png', 'icon-512.png', 'manifest.json',
   'lib/hanzilookup.min.js', 'data/hanzi-strokes.js',
-  'data/ko-data.js', 'data/ko-data-2.js', 'data/ko-data-3.js', 'data/ko-data-4.js', 'data/ko-data-5.js', 'data/grammar-data.js', 'data/examples-data.js', 'data/examples-data-2.js', 'data/examples-data-3.js'];
+  'data/ko-data.js', 'data/ko-data-2.js', 'data/ko-data-3.js', 'data/ko-data-4.js', 'data/ko-data-5.js', 'data/measure-data.js', 'data/grammar-data.js', 'data/examples-data.js', 'data/examples-data-2.js', 'data/examples-data-3.js'];
 var BIG = 'data/cedict-data.js';
 var WAIT = 3000;   // 인터넷이 이 시간(ms) 안에 답하지 않으면 저장해 둔 파일로 연다(신호가 약한 곳 대비)
 var slowUntil = 0; // 방금 인터넷이 늦었으면 이 시각까지는 기다리지 않고 바로 저장분을 쓴다(파일마다 3초씩 기다리지 않도록)

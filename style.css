@@ -167,6 +167,17 @@ body.hw-open { padding-bottom: calc(var(--nav-h) + var(--hw-h, 330px) + env(safe
 .twnote b { display: block; color: var(--accent); font-size: 12px; margin-bottom: 2px; }
 #nav a { min-width: 0; }
 
+/* 세는 말(양사) */
+.mwbox .mw-head { display: flex; align-items: center; justify-content: space-between; }
+.mw-label { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.mwbox .say { border: 0; background: none; color: var(--muted); padding: 4px 6px; cursor: pointer; }
+.mwbox .say svg { width: 18px; height: 18px; }
+.mw-items { margin-top: 4px; font-size: 20px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.mw-item { font-family: var(--han); }
+.mw-item a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+.mw-item a.on { background: var(--accent-soft); border-radius: 4px; }
+.mw-sep { color: var(--muted); font-size: 14px; }
+
 /* 발음 버튼 상태: 준비 중 · 재생 중 · 실패 */
 .ex .say { border-radius: 8px; }
 button.say-wait, button.say-on { color: var(--accent) !important; background: var(--accent-soft) !important; border-color: var(--accent) !important; }

@@ -4,7 +4,7 @@
   // ---------- 버전 ----------
   // 고쳐서 올릴 때마다 올린다. sw.js의 CACHE 이름도 'twko-' + 같은 번호로 맞춘다.
   // tools/deploy.py는 바뀐 파일이 있는데 번호가 그대로면 끝자리를 자동으로 올리고 날짜를 바꾼다.
-  var VERSION = '1.2.1', VERSION_DATE = '2026-11-24';
+  var VERSION = '1.3.0', VERSION_DATE = '2026-11-24';
 
   // ---------- 도우미 ----------
   var $ = function (s) { return document.querySelector(s); };
@@ -115,6 +115,15 @@
     return list;
   }
   var KO = parseKo(window.KO_RAW || '');
+
+  // 양사(세는 말): 명사 → { mw: ['台', '輛'], note } — data/measure-data.js
+  var MW = Object.create(null);
+  (window.MW_RAW || '').split('\n').forEach(function (l) {
+    if (!l || l[0] === '#') return;
+    var f = l.split('|');
+    if (f.length < 2 || !f[0].trim()) return;
+    MW[f[0].trim()] = { mw: f[1].split(',').map(function (x) { return x.trim(); }).filter(Boolean), note: (f[2] || '').trim() };
+  });
 
   // 문법 카드
   var LV_NAME = { A1: 'A1 · 입문', A2: 'A2 · 기초', B1: 'B1 · 중급', TW: '대만식 문법' };
@@ -461,6 +470,19 @@
     if (e.src === 'ce') h += '<button class="linkbtn" data-act="addko" data-t="' + esc(e.t) + '" data-p="' + esc(e.p) + '">한국어 뜻 직접 추가</button>';
     return h + '</div>';
   }
+  // 단어 화면의 '세는 말' 칸: 一台機車 · 一輛機車. 양사 글자를 누르면 그 자리에서 뜻이 뜬다.
+  function mwHtml(t) {
+    var m = MW[t];
+    if (!m || !m.mw.length) return '';
+    var first = '一' + m.mw[0] + t;
+    return '<div class="sense mwbox"><div class="mw-head"><span class="mw-label">세는 말(양사)</span>' +
+      '<button class="say" data-act="say" data-t="' + esc(first) + '" aria-label="' + esc(first) + ' 듣기">' +
+      '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg></button></div>' +
+      '<div class="mw-items">' + m.mw.map(function (w) {
+        return '<span class="mw-item" lang="zh-Hant">一<a class="pw" href="' + wordHref(w) + '" data-c="' + esc(w) + '">' + esc(w) + '</a>' + esc(t) + '</span>';
+      }).join('<span class="mw-sep">·</span>') + '</div>' +
+      (m.note ? '<p class="note">' + esc(m.note) + '</p>' : '') + '</div>';
+  }
   function relatedWords(t) {
     var hits = [];
     USER.concat(KO, CE).forEach(function (e) {
@@ -502,6 +524,7 @@
       } else {
         h += list.map(function (e) { return senseHtml(e, list.length > 1); }).join('');
       }
+      h += mwHtml(t);
       var own = {};
       list.forEach(function (e) { if (e.ex) own[e.ex.zh] = 1; });
       var exs = examplesFor(t, own);
