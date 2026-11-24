@@ -48,7 +48,7 @@ def set_version(ver, date):
 def served(path):
     # 휴대폰에서 여는 앱에 쓰이는 파일인가(설명 문서·도구는 버전과 상관없다)
     return not (path.startswith("tools/") or path.endswith((".md", ".bat", ".py", ".txt")) or path == ".nojekyll")
-SKIP_DIRS = {"raw", ".claude", ".git", "__pycache__"}
+SKIP_DIRS = {"raw", ".claude", ".git", "__pycache__", "design"}   # design: 로고 시안 등 확정 전 초안
 BIG_LAST = "data/cedict-data.js"
 
 
