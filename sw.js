@@ -1,7 +1,7 @@
 // 한 번 열어 본 뒤에는 인터넷이 없어도 사전이 열리도록 파일을 기기에 저장해 둡니다.
 // CACHE 이름은 'twko-' + app.js의 VERSION과 같게 둡니다(tools/deploy.py가 함께 올립니다).
 // 이름이 바뀌면 새 버전을 설치하면서 옛 저장분을 지웁니다.
-var CACHE = 'twko-1.2.0';
+var CACHE = 'twko-1.2.1';
 // 10MB짜리 영어 참고 사전은 따로 저장해서 버전이 바뀌어도 다시 받지 않습니다.
 // data/cedict-data.js를 새로 만들었을 때만 아래 숫자를 올려 주세요.
 var BIG_CACHE = 'twko-cedict-1';
