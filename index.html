@@ -15,6 +15,18 @@
 </head>
 <body>
 
+<!-- 여는 화면: 사전 파일을 불러오는 동안 보이고, 연결 상태와 오프라인 준비 상태를 알려 준 뒤 사라진다 -->
+<div id="splash" role="status" aria-live="polite">
+  <div class="sp-box">
+    <div class="sp-logo" lang="zh-Hant">台韓</div>
+    <div class="sp-name">대만 중국어–한국어 사전</div>
+    <div class="sp-ver" id="sp-ver"></div>
+    <div class="sp-line" id="sp-net">사전을 불러오는 중…</div>
+    <div class="sp-line sp-sub" id="sp-off"></div>
+    <div class="sp-tip">화면을 누르면 바로 시작합니다</div>
+  </div>
+</div>
+
 <!-- 검색 화면 -->
 <section id="screen-search" class="screen">
   <header class="bar">
@@ -271,7 +283,8 @@
     <summary>📴 인터넷 없이 쓰기</summary>
     <div>
       인터넷이 되는 곳에서 한 번 열어 두면, 그 뒤로는 인터넷 없이도 사전·문법·예문을 모두 볼 수 있습니다.
-      첫 화면 아래의 “영어 참고 사전 125,405개”가 보이면 준비가 끝난 것입니다.<br>
+      사전을 열 때 나오는 화면이나 아래 ‘버전’ 항목에 “오프라인 준비 완료”가 보이면 준비가 끝난 것입니다.
+      처음 한 번은 10MB짜리 영어 참고 사전을 받으므로 와이파이에서 여는 것이 좋습니다.<br>
       브라우저의 <b>인터넷 사용 기록·사이트 데이터 삭제</b>를 하면 저장된 사전과 단어장이 함께 지워지니,
       중요한 단어장은 위의 “내보내기”로 따로 보관해 주세요.
     </div>
@@ -280,8 +293,15 @@
     <summary>🔄 버전 · 새 버전 받기 <span class="ver">지금 <b class="appver"></b></span></summary>
     <div>
       지금 쓰고 있는 사전은 <b class="appver"></b> 버전입니다. 같은 번호가 사전 첫 화면 맨 아래에도 나옵니다.<br>
+      <b>연결</b>: <span class="netstat"></span><br>
+      <b>오프라인</b>: <span class="offstat"></span><br>
+      사전을 열 때 인터넷이 3초 안에 답하지 않으면(끊겼거나 신호가 약하면) 기기에 저장된 사전으로 엽니다. 그사이 새 파일이 받아지면 다음에 열 때 반영됩니다.<br>
       새 버전을 올렸는데 번호가 그대로라면, 인터넷이 되는 곳에서 아래 버튼을 누르거나 홈 화면 앱을 완전히 닫았다가(앱 전환 화면에서 위로 밀기) 다시 여세요.
       <span class="btnrow"><button type="button" data-act="reload">새 버전 받기(다시 불러오기)</button></span>
+      <br><b>1.2.0에서 바뀐 것</b><br>
+      · 열 때 여는 화면에서 인터넷 연결 여부(온라인·오프라인·새 버전 있음)와 오프라인 준비 상태를 알려 줍니다<br>
+      · 신호가 약할 때 오래 기다리지 않고 3초 뒤 저장된 사전으로 엽니다<br>
+      · 버전이 바뀌어도 10MB짜리 영어 참고 사전을 다시 받지 않습니다<br>
       <br><b>1.1.0에서 바뀐 것</b><br>
       · 기초 한자 655자와 기본 단어·대만 생활 어휘·지명 등 한국어 풀이 약 1,000개 추가<br>
       · 발음 안내 화면(성조, 누르면 소리 나는 주음부호 표, 대만·본토 발음 차이)<br>
