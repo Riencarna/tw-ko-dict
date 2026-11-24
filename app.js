@@ -4,7 +4,7 @@
   // ---------- 버전 ----------
   // 고쳐서 올릴 때마다 올린다. sw.js의 CACHE 이름도 'twko-' + 같은 번호로 맞춘다.
   // tools/deploy.py는 바뀐 파일이 있는데 번호가 그대로면 끝자리를 자동으로 올리고 날짜를 바꾼다.
-  var VERSION = '1.1.0', VERSION_DATE = '2026-11-24';
+  var VERSION = '1.2.0', VERSION_DATE = '2026-11-24';
 
   // ---------- 도우미 ----------
   var $ = function (s) { return document.querySelector(s); };
@@ -334,7 +334,7 @@
     }
     h += '<a class="more" href="#/p">처음이라면: 성조 · 주음부호 · 대만 발음 안내 보기 ›</a>';
     h += '<p class="status">' + esc(statusText()) + '<br>검색 예: <span lang="zh-Hant">捷運</span> · 택시 · lese · ㄐㄧㄝˊ ㄩㄣˋ · pineapple' +
-      '<br>버전 ' + VERSION + ' (' + VERSION_DATE + ')</p>';
+      '<br>버전 ' + VERSION + ' (' + VERSION_DATE + ')' + statusLine() + '</p>';
     return h;
   }
   function renderSearch() {
@@ -1042,11 +1042,108 @@
     ev.target.value = '';
   });
 
+  // ---------- 연결 상태 · 오프라인 준비 (여는 화면 · 첫 화면 · 도움말) ----------
+  var NET = { state: 'checking', remote: '' };                  // checking · online · offline · local
+  var OFF = { state: 'checking', have: 0, total: 0, big: false }; // checking · ready · partial · none
+  var splashGone = false, splashTimer = null, splashLong = false, lastNet = '';
+  function verNewer(a, b) {   // 버전 a가 b보다 새것인가
+    var x = a.split('.'), y = b.split('.');
+    for (var i = 0; i < 3; i++) if (+(x[i] || 0) !== +(y[i] || 0)) return +(x[i] || 0) > +(y[i] || 0);
+    return false;
+  }
+  function hasNewer() { return NET.state === 'online' && NET.remote && verNewer(NET.remote, VERSION); }
+  function netText() {
+    if (NET.state === 'checking') return '인터넷 연결을 확인하는 중…';
+    if (NET.state === 'local') return 'PC의 파일로 열었습니다';
+    if (NET.state === 'offline') return '📴 오프라인 · 저장된 사전으로 열었습니다';
+    if (hasNewer()) return '🌐 온라인 · 새 버전 ' + NET.remote + '이 있습니다';
+    return '🌐 온라인 · 최신 버전으로 열었습니다';
+  }
+  function offText() {
+    if (OFF.state === 'none') return '이 환경에서는 오프라인 저장을 쓸 수 없습니다';
+    if (OFF.state === 'checking') return '오프라인 준비 상태를 확인하는 중…';
+    if (OFF.state === 'ready') return '✓ 오프라인 준비 완료 (파일 ' + OFF.have + '/' + OFF.total + ')';
+    return '오프라인 준비 중 (파일 ' + OFF.have + '/' + OFF.total + (OFF.big ? ')' : ', 영어 참고 사전 받는 중)');
+  }
+  function hideSplash() {
+    if (splashGone) return;
+    splashGone = true;
+    $('#splash').classList.add('hide');
+    setTimeout(function () { $('#splash').hidden = true; }, 400);
+  }
+  function showStatus() {
+    $('#sp-net').textContent = netText();
+    $('#sp-off').textContent = offText();
+    Array.prototype.forEach.call(document.querySelectorAll('.netstat'), function (el) { el.textContent = netText(); });
+    Array.prototype.forEach.call(document.querySelectorAll('.offstat'), function (el) { el.textContent = offText(); });
+    if (netText() !== lastNet) {   // 연결 상태가 바뀌었을 때만 첫 화면 아래 상태 줄을 다시 그린다
+      lastNet = netText();
+      if (current.indexOf('search') === 0 && !activeCat && !$('#q').value.trim()) renderSearch();
+    }
+    // 연결 확인이 끝나면 잠깐 보여 주고 닫는다(새 버전이 있으면 조금 더 길게)
+    if (NET.state !== 'checking' && !splashTimer) splashTimer = setTimeout(hideSplash, 1200);
+    if (hasNewer() && !splashLong && !splashGone) { splashLong = true; clearTimeout(splashTimer); splashTimer = setTimeout(hideSplash, 3500); }   // 새 버전 소식은 조금 더 길게
+  }
+  function setNet(state, remote) {   // 처음 정해진 한 번만 반영한다
+    if (NET.state !== 'checking') return;
+    NET.state = state; NET.remote = remote || '';
+    showStatus();
+  }
+  // 연결 상태는 두 갈래로 알아낸다. 먼저 오는 쪽을 쓴다.
+  //  ① 서비스 워커의 답(checkOffline): 이 화면을 인터넷에서 받았는지 저장분에서 꺼냈는지 — 대개 바로 온다
+  //  ② 직접 확인: 서버의 sw.js를 받아 본다(①을 알 수 없을 때, 그리고 새 버전이 있는지 보려고)
+  function checkNetwork() {
+    if (!/^https?:$/.test(location.protocol)) { setNet('local'); return; }
+    if (navigator.onLine === false) { setNet('offline'); return; }
+    // 서비스 워커가 아직 이 화면을 맡고 있지 않다면(처음 연 경우) 화면은 인터넷에서 받은 것이다
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) setNet('online', VERSION);
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); setNet('offline'); }, 3000);   // 신호가 약해 답이 늦어도 오프라인으로 본다
+    // sw.js에는 올라가 있는 버전 번호(CACHE 이름)가 들어 있다. ?check는 서비스 워커가 저장분을 거치지 않고 보낸다.
+    fetch('sw.js?check=' + Date.now(), { cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function (t) {
+        clearTimeout(timer);
+        var m = /'twko-(\d+\.\d+\.\d+)'/.exec(t);
+        if (NET.state === 'online' && m && verNewer(m[1], VERSION)) { NET.remote = m[1]; showStatus(); }   // 이미 온라인으로 정해졌어도 새 버전 소식은 반영
+        else setNet('online', m ? m[1] : '');
+      })
+      .catch(function () { clearTimeout(timer); setNet('offline'); });
+  }
+  function checkOffline(tries) {
+    if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol) || !window.MessageChannel) { OFF.state = 'none'; showStatus(); return; }
+    navigator.serviceWorker.ready.then(function (reg) {
+      if (!reg.active) return;
+      var ch = new MessageChannel();
+      ch.port1.onmessage = function (ev) {
+        var d = ev.data || {};
+        if (d.opened === 'network') setNet('online', VERSION);
+        else if (d.opened === 'cache') setNet('offline');
+        OFF.have = d.have || 0; OFF.total = d.total || 0; OFF.big = !!d.big;
+        OFF.state = OFF.total && OFF.have >= OFF.total ? 'ready' : 'partial';
+        showStatus();
+        if (OFF.state === 'partial' && tries < 40) setTimeout(function () { checkOffline(tries + 1); }, 3000);   // 받는 동안 다시 확인
+      };
+      reg.active.postMessage({ type: 'offline-status' }, [ch.port2]);
+    }).catch(function () {});
+  }
+  function statusLine() {   // 첫 화면 맨 아래에 붙는 연결 상태
+    if (NET.state === 'checking' || NET.state === 'local') return '';
+    return '<br>' + esc(netText()) + (hasNewer() ? ' <button class="netbtn" data-act="reload">새 버전 받기</button>' : '');
+  }
+
   // ---------- 시작 ----------
   Array.prototype.forEach.call(document.querySelectorAll('.appver'), function (el) { el.textContent = VERSION + ' (' + VERSION_DATE + ')'; });
+  $('#sp-ver').textContent = '버전 ' + VERSION;
+  $('#splash').addEventListener('click', hideSplash);
+  setTimeout(hideSplash, 6000);   // 무슨 일이 있어도 6초 뒤에는 닫는다
+  // 연결 확인을 먼저 시작한다(영어 참고 사전을 처리하는 동안에는 답을 받아도 화면에 늦게 반영되므로)
+  showStatus();
+  checkNetwork();
+  checkOffline(0);
   buildIndex();
   route();
-  setTimeout(loadCedict, 50);
+  setTimeout(loadCedict, 150);
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
   }
