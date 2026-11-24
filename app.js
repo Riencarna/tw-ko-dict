@@ -81,22 +81,31 @@
   }
   function zhuyin(p) { return p.split(' ').map(function (s) { return zhuyinSyllable(s) || s; }).join(' '); }
   function pinKey(p) { return p.toLowerCase().replace(/u:|ü/g, 'v').replace(/[^a-z]/g, ''); }
+  function toneKey(p) { return (p || '').toLowerCase().replace(/u:|ü/g, 'v').replace(/[^a-z1-5]/g, ''); }   // 성조까지 구분하는 열쇠
   function zyKey(z) { return z.replace(/[ˊˇˋ˙\s]/g, ''); }
 
   // ---------- 데이터 ----------
   function parseKo(raw) {
-    var list = [], seen = Object.create(null), cat = '';
+    var list = [], seen = Object.create(null), cat = '', sub = '';
     raw.split('\n').forEach(function (line) {
-      if (line[0] === '#') { cat = line.slice(1).trim(); return; }   // "#분류" 줄: 아래 줄들의 기본 분류
+      // "#분류" 줄: 아래 줄들의 기본 분류. "#분류 > 상황"이면 분류 목록에서 상황별로 묶어 보여 준다.
+      if (line[0] === '#') { var hd = line.slice(1).split('>'); cat = hd[0].trim(); sub = (hd[1] || '').trim(); return; }
       var f = line.split('|');
       if (f.length < 3 || !f[0].trim()) return;
-      var t = f[0].trim(), key = t + '|' + pinKey(f[1]);
-      if (seen[key]) return;                                          // 같은 단어가 두 번 나오면 먼저 나온 것만 쓴다
+      var t = f[0].trim(), key = t + '|' + toneKey(f[1]);
+      if (seen[key]) return;                                          // 같은 단어·같은 발음이 두 번 나오면 먼저 나온 것만 쓴다(성조만 다른 읽기는 따로 둔다: 子 zi3 / zi5)
       seen[key] = 1;
       var ex = null;
       if (f[6]) { var i = f[6].indexOf('='); if (i > 0) ex = { zh: f[6].slice(0, i), ko: f[6].slice(i + 1) }; }
+      // 본토 표현 칸: "A / ~B / =C" (없음 = 본토에서 쓰는 말, ~ = 대만도 쓰지만 본토에서 더 흔함, = = 공통 표준어)
+      var cnw = (f[4] || '').split('/').map(function (x) {
+        x = x.trim();
+        var k = x[0] === '~' || x[0] === '=' ? x[0] : '';
+        return { w: k ? x.slice(1).trim() : x, k: k };
+      }).filter(function (x) { return x.w; });
       list.push({ src: 'ko', t: t, s: '', p: f[1].trim(), ko: f[2].split(';').map(function (x) { return x.trim(); }),
-        cat: (f[3] || '').trim() || cat, cn: (f[4] || '').trim(), note: (f[5] || '').trim(), ex: ex, en: '', k: pinKey(f[1]) });
+        cat: (f[3] || '').trim() || cat, sub: (f[3] || '').trim() ? '' : sub, cn: cnw.map(function (x) { return x.w; }).join(' / '), cnw: cnw,
+        note: (f[5] || '').trim(), ex: ex, en: '', k: pinKey(f[1]) });
     });
     return list;
   }
@@ -160,13 +169,16 @@
       var list = mine[c.t];
       c.h = false;
       if (!list) return;
-      list.forEach(function (e) {
-        if (!e.p) { e.p = c.p; e.k = c.k; }
-        if (e.k === c.k || e.k === c.km) {
-          c.h = true;
-          e.en = e.en ? e.en + '; ' + c.en : c.en;
-          if (c.pm && !e.pm && c.k === e.k) e.pm = c.pm;
-        }
+      list.forEach(function (e) { if (!e.p) { e.p = c.p; e.k = c.k; } });
+      var hits = list.filter(function (e) { return e.k === c.k || e.k === c.km; });
+      if (hits.length > 1) {   // 성조만 다른 풀이가 여럿이면(中 zhong1 / zhong4) 성조까지 맞는 풀이에만 붙인다
+        var exact = hits.filter(function (e) { var k = toneKey(e.p); return k === toneKey(c.p) || (c.pm && k === toneKey(c.pm)); });
+        if (exact.length) hits = exact;
+      }
+      hits.forEach(function (e) {
+        c.h = true;
+        e.en = e.en ? e.en + '; ' + c.en : c.en;
+        if (c.pm && !e.pm && c.k === e.k) e.pm = c.pm;
       });
     });
     buildIndex();
@@ -285,6 +297,9 @@
 
   // ---------- 검색 화면 ----------
   var VS = '대만 vs 본토';
+  var FF = '한자어 함정';   // 한국 한자어와 뜻이 다른 말: 메모에 "한국 한자어"가 들어간 단어를 모은다
+  function isFF(e) { return e.note.indexOf('한국 한자어') >= 0; }
+  function catItems(c) { return KO.filter(function (e) { return c === VS ? e.cn : c === FF ? isFF(e) : e.cat === c; }); }
   var filter = 'all', activeCat = '';
 
   var UI = load('twko_ui', {});   // 접어 둔 구역 기억: { hist: false, cats: false }
@@ -304,13 +319,15 @@
     }
     var counts = {}, order = [];
     KO.forEach(function (e) { if (!counts[e.cat]) { counts[e.cat] = 0; order.push(e.cat); } counts[e.cat]++; });
-    var vs = KO.filter(function (e) { return e.cn; }).length;
-    h += foldHead('cats', '분류별 단어', order.length + 1);
+    h += foldHead('cats', '분류별 단어', order.length + 2);
     if (UI.cats !== false) {
-      h += '<div class="chips"><a class="hot" href="#/c/' + encodeURIComponent(VS) + '">' + VS + '<span>' + vs + '</span></a>';
+      h += '<div class="chips">' + [VS, FF].map(function (c) {
+        return '<a class="hot" href="#/c/' + encodeURIComponent(c) + '">' + c + '<span>' + catItems(c).length + '</span></a>';
+      }).join('');
       order.forEach(function (c) { h += '<a href="#/c/' + encodeURIComponent(c) + '">' + esc(c) + '<span>' + counts[c] + '</span></a>'; });
       h += '</div>';
     }
+    h += '<a class="more" href="#/p">처음이라면: 성조 · 주음부호 · 대만 발음 안내 보기 ›</a>';
     h += '<p class="status">' + esc(statusText()) + '<br>검색 예: <span lang="zh-Hant">捷運</span> · 택시 · lese · ㄐㄧㄝˊ ㄩㄣˋ · pineapple</p>';
     return h;
   }
@@ -325,9 +342,12 @@
       $('#results').innerHTML = (list.length ? '<div class="count">결과 ' + list.length + (list.length === MAX ? '개 이상' : '개') + '</div>' : '') +
         listHtml(list, ceState === 'loading' ? '검색 결과가 없습니다.<br>영어 참고 사전을 아직 불러오는 중입니다.' : '검색 결과가 없습니다.');
     } else if (activeCat) {
-      var items = KO.filter(function (e) { return activeCat === VS ? e.cn : e.cat === activeCat; });
+      var items = catItems(activeCat), subs = [], by = {};
+      items.forEach(function (e) { var s = e.sub || ''; if (!by[s]) { by[s] = []; subs.push(s); } by[s].push(e); });
       $('#home').innerHTML = '<h2 class="sec">' + esc(activeCat) + ' · ' + items.length + '개 <a href="#/">분류 목록</a></h2>';
-      $('#results').innerHTML = listHtml(items, '');
+      $('#results').innerHTML = subs.length > 1 ? subs.map(function (s) {   // 상황별로 나눈 분류(생활 회화)
+        return '<h3 class="subsec">' + esc(s || '그 밖의 말') + ' <i>' + by[s].length + '</i></h3>' + listHtml(by[s], '');
+      }).join('') : listHtml(items, '');
     } else {
       $('#home').innerHTML = homeHtml();
       $('#results').innerHTML = '';
@@ -337,17 +357,48 @@
   // ---------- 상세 화면 ----------
   var entryWord = '', entryTab = 'def';
 
-  function tokenize(text) {  // 문장을 사전에 있는 단어 단위로 자른다(가장 긴 단어 우선). 통문장 표제어는 건너뛴다.
+  // 문장을 사전에 있는 단어 단위로 자른다. 통문장 표제어는 건너뛴다.
+  // 왼쪽부터 가장 긴 단어를 잡으면 在台灣이 在台|灣, 換工作가 換工|作처럼 잘리므로,
+  // 한자 덩어리마다 "조각 비용"의 합이 가장 작은 나누기를 고른다.
+  //   한국어 풀이가 있는 단어(한 글자 포함) 100 · 영어 풀이뿐인 두 글자 이상 단어 150 · 풀이가 없거나 영어뿐인 한 글자 200
+  //   (영어 풀이 단어는 한 글자 둘보다는 싸게 두어 交往·他們이 交|往처럼 쪼개지지 않게 한다)
+  // 그 밖에는 비용이 같을 때만 갈리도록:
+  //   홀로 잘 쓰이는 한 글자(上·人·在·了 등)는 99 → 網路上 = 網路|上, 沒有人 = 沒有|人, 這個人 = 這個|人
+  //   그래도 같으면 뒤쪽 단어가 길어지는 쪽 → 最好吃 = 最|好吃, 十分鐘 = 十|分鐘
+  var FREE1 = {};
+  '上下裡人在了的是有不也都就很嗎呢吧和跟給到說會要'.split('').forEach(function (c) { FREE1[c] = 1; });
+  // 예문 나누기에 쓰지 않는 영어 사전 단어: 문장 속에서는 거의 다른 뜻으로 잘못 걸린다
+  // (說得很好 → 說|得很|好, 我去超商 → 我去|超商, 我等了 → 我等|了, 搭錯車 → 搭|錯車, 都會去 → 都會|去).
+  var NOSEG = { '得很': 1, '我去': 1, '我等': 1, '錯車': 1, '都會': 1, '要看': 1, '完了': 1 };
+  function wordCost(w, single) {
+    var list = INDEX[w];
+    if (single) return list && list[0].src !== 'ce' ? (FREE1[w] ? 99 : 100) : 200;
+    if (!list || PHRASE[w] || (NOSEG[w] && list[0].src === 'ce')) return -1;   // 쓸 수 없는 조각
+    return list[0].src !== 'ce' ? 100 : 150;
+  }
+  function splitHan(cs) {
+    var n = cs.length, best = new Array(n + 1), step = new Array(n + 1);
+    best[n] = 0;
+    for (var i = n - 1; i >= 0; i--) {
+      best[i] = Infinity;
+      for (var k = 1; k <= Math.min(6, n - i); k++) {
+        var c = wordCost(cs.slice(i, i + k).join(''), k === 1);
+        if (c < 0) continue;
+        if (c + best[i + k] < best[i]) { best[i] = c + best[i + k]; step[i] = k; }
+      }
+    }
+    var out = [];
+    for (var j = 0; j < n; j += step[j]) out.push(cs.slice(j, j + step[j]).join(''));
+    return out;
+  }
+  function tokenize(text) {
     var out = [], cs = chars(text), i = 0;
     while (i < cs.length) {
       if (!HAN.test(cs[i])) { out.push({ w: cs[i], han: false }); i++; continue; }
-      var hit = cs[i];
-      for (var n = Math.min(6, cs.length - i); n > 1; n--) {
-        var w = cs.slice(i, i + n).join('');
-        if (INDEX[w] && !PHRASE[w]) { hit = w; break; }
-      }
-      out.push({ w: hit, han: true });
-      i += chars(hit).length;
+      var j = i;
+      while (j < cs.length && HAN.test(cs[j])) j++;
+      splitHan(cs.slice(i, j)).forEach(function (w) { out.push({ w: w, han: true }); });
+      i = j;
     }
     return out;
   }
@@ -383,7 +434,14 @@
       h += '<ol class="defs en' + (parts.length === 1 ? ' single' : '') + '">' + parts.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>';
     }
     var b = '';
-    if (e.cn) b += '<span class="badge">대만 표현</span><span class="badge cn">본토: ' + linkWords(e.cn) + '</span>';
+    if (e.cn) {
+      var only = function (k) { return e.cnw.filter(function (x) { return x.k === k; }).map(function (x) { return x.w; }).join(' / '); };
+      var main = only(''), more = only('~'), std = only('=');
+      b += '<span class="badge">' + (!main && !std ? '대만에서 더 흔함' : '대만 표현') + '</span>';
+      if (main) b += '<span class="badge cn">본토: ' + linkWords(main) + '</span>';
+      if (more) b += '<span class="badge cn">본토에서 더 흔함: ' + linkWords(more) + '</span>';
+      if (std) b += '<span class="badge plain">표준어: ' + linkWords(std) + '</span>';
+    }
     else if (e.tw) b += '<span class="badge">대만 표현</span>';
     if (e.prc) b += '<span class="badge cn">본토 표현 포함</span>';
     if (e.pm) b += '<span class="badge cn">본토 발음: ' + esc(pinyinMarks(e.pm)) + '</span>';
@@ -533,8 +591,10 @@
 
   // ---------- 문법 화면 ----------
   var gfilter = 'all';
+  var GUIDE_ROW = '<a class="row" href="#/p"><div class="l1"><span class="gt">발음 안내</span></div>' +
+    '<div class="df ko">성조 · 주음부호 표 · 대만 발음과 본토 발음의 차이</div></a>';
   function renderGrammar() {
-    var h = '';
+    var h = gfilter === 'all' ? '<h2 class="sec">처음이라면</h2>' + GUIDE_ROW : '';
     ['A1', 'A2', 'B1', 'TW'].forEach(function (lv) {
       if (gfilter !== 'all' && gfilter !== lv && !(gfilter === 'TW')) return;
       var items = GR.filter(function (g) {
@@ -578,6 +638,7 @@
     var screen = 'search', sameHash = lastHash === location.hash;
     if (segs[0] === 'w' && segs[1]) screen = 'entry';
     else if (segs[0] === 'g') screen = segs[1] !== undefined ? 'gcard' : 'grammar';
+    else if (segs[0] === 'p') screen = 'guide';   // 발음 안내(내용은 index.html에 그대로 적혀 있다)
     else if (segs[0] === 'fav' || segs[0] === 'hist' || segs[0] === 'mine') screen = segs[0];
     if (!sameHash && current) scrollPos[current] = window.scrollY;
     if (!sameHash) closePeek();
@@ -595,12 +656,12 @@
     if (screen === 'grammar') renderGrammar();
     if (screen === 'gcard') renderGCard(+segs[1]);
 
-    ['search', 'entry', 'grammar', 'gcard', 'fav', 'hist', 'mine'].forEach(function (s) { $('#screen-' + s).hidden = s !== screen; });
-    var navOf = { entry: 'search', gcard: 'grammar' };
+    ['search', 'entry', 'grammar', 'gcard', 'guide', 'fav', 'hist', 'mine'].forEach(function (s) { $('#screen-' + s).hidden = s !== screen; });
+    var navOf = { entry: 'search', gcard: 'grammar', guide: 'grammar' };
     Array.prototype.forEach.call(document.querySelectorAll('#nav a'), function (a) {
       a.classList.toggle('on', a.dataset.nav === (navOf[screen] || screen));
     });
-    var detail = screen === 'entry' || screen === 'gcard';
+    var detail = screen === 'entry' || screen === 'gcard' || screen === 'guide';
     if (!sameHash) window.scrollTo(0, detail ? 0 : (scrollPos[screen + location.hash] || 0));
     current = screen + location.hash;
     lastHash = location.hash;
