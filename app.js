@@ -4,7 +4,7 @@
   // ---------- 버전 ----------
   // 고쳐서 올릴 때마다 올린다. sw.js의 CACHE 이름도 'twko-' + 같은 번호로 맞춘다.
   // tools/deploy.py는 바뀐 파일이 있는데 번호가 그대로면 끝자리를 자동으로 올리고 날짜를 바꾼다.
-  var VERSION = '1.2.0', VERSION_DATE = '2026-11-24';
+  var VERSION = '1.2.1', VERSION_DATE = '2026-11-24';
 
   // ---------- 도우미 ----------
   var $ = function (s) { return document.querySelector(s); };
@@ -713,8 +713,36 @@
       '\n기기: ' + (IOS ? '아이폰/아이패드' : '그 밖의 기기') +
       '\n' + (navigator.userAgent.match(/(OS [\d_]+|Android [\d.]+|Windows NT [\d.]+|Version\/[\d.]+|Chrome\/[\d]+)/g) || []).join(' · ');
   }
-  function speak(text) {
-    if (!synth || !window.SpeechSynthesisUtterance) { toast('이 브라우저는 음성 읽기를 지원하지 않습니다.'); return; }
+  // 발음 버튼 상태: 누르면 '준비 중'(색 + 깜빡임) → 소리가 시작되면 '재생 중'(채워진 스피커 + 물결 움직임)
+  // → 끝나면 원래대로. 소리가 시작되지 않으면 '실패'(빨간색으로 흔들림)를 잠깐 보여 준다.
+  // (아이폰 무음 모드에서는 소리 없이 '재생 중'만 보이므로, 기능은 되는데 무음인지 구분할 수 있다)
+  var sayBtn = null, sayTimer = null;
+  function sayState(btn, state) {   // state: 'wait' · 'on' · 'fail' · '' (원래대로)
+    if (sayBtn && sayBtn !== btn) sayBtn.classList.remove('say-wait', 'say-on', 'say-fail');
+    sayBtn = btn || null;
+    clearTimeout(sayTimer);
+    if (!btn) return;
+    btn.classList.remove('say-wait', 'say-on', 'say-fail');
+    if (state) btn.classList.add('say-' + state);
+    if (state === 'fail') sayTimer = setTimeout(function () { sayState(btn, ''); }, 1500);
+  }
+  function watchUtter(u, btn, text, onFail) {   // 소리 시작·끝·오류에 맞춰 버튼 상태를 바꾼다(지금 읽는 소리일 때만)
+    var started = false;
+    sayState(btn, 'wait');
+    u.onstart = function () { started = true; if (lastUtter === u) sayState(btn, 'on'); };
+    u.onend = function () { if (lastUtter === u) sayState(btn, ''); };
+    u.onerror = function (ev) {
+      if (lastUtter !== u) return;
+      if (ev.error === 'interrupted' || ev.error === 'canceled') { sayState(btn, ''); return; }
+      sayState(btn, 'fail'); onFail(ev.error);
+    };
+    // 3초가 지나도 시작하지 않으면 실패로 본다
+    setTimeout(function () { if (!started && lastUtter === u && !synth.speaking && !synth.pending) { sayState(btn, 'fail'); onFail(''); } }, 3000);
+    // 끝 신호가 오지 않는 기기를 위해, 글자 수로 어림한 시간이 지나면 원래대로 돌린다
+    setTimeout(function () { if (lastUtter === u && btn && btn.classList.contains('say-on')) sayState(btn, ''); }, 4000 + chars(text).length * 450);
+  }
+  function speak(text, btn) {
+    if (!synth || !window.SpeechSynthesisUtterance) { sayState(btn, 'fail'); toast('이 브라우저는 음성 읽기를 지원하지 않습니다.'); return; }
     if (IOS) {
       // 아이폰: 내장된 대만 중국어 음성을 시스템이 고르게 하고, 누른 그 순간에 곧바로 읽는다
       // (조금이라도 늦게 호출하면 "사용자가 누른 동작"으로 인정되지 않아 소리가 막힌다).
@@ -722,8 +750,8 @@
       iu.lang = 'zh-TW';
       iu.rate = 0.9;
       iu.volume = 1;
-      iu.onerror = function (ev) { if (ev.error !== 'interrupted' && ev.error !== 'canceled') toast('음성을 재생하지 못했습니다. (' + ev.error + ')'); };
       lastUtter = iu;
+      watchUtter(iu, btn, text, function (err) { toast('음성을 재생하지 못했습니다.' + (err ? ' (' + err + ')' : '')); });
       if (synth.speaking || synth.pending) synth.cancel();
       if (synth.paused) synth.resume();
       synth.speak(iu);
@@ -733,18 +761,16 @@
     }
     loadVoices();
     var v = pickVoice();
-    if (voices.length && !v) { toast(NO_VOICE); return; }   // 음성 목록은 있는데 중국어가 없는 경우
-    var u = new SpeechSynthesisUtterance(text), started = false;
+    if (voices.length && !v) { sayState(btn, 'fail'); toast(NO_VOICE); return; }   // 음성 목록은 있는데 중국어가 없는 경우
+    var u = new SpeechSynthesisUtterance(text);
     u.lang = v ? v.lang.replace('_', '-') : 'zh-TW';
     if (v) u.voice = v;
     u.rate = 0.9;
-    u.onstart = function () { started = true; };
-    u.onerror = function (ev) { if (ev.error !== 'interrupted' && ev.error !== 'canceled') toast(NO_VOICE); };
     lastUtter = u;   // 재생이 끝나기 전에 사라지지 않도록 붙잡아 둔다
+    watchUtter(u, btn, text, function () { toast(NO_VOICE); });
     var go = function () {
       synth.speak(u);
       if (synth.paused) synth.resume();
-      setTimeout(function () { if (!started && lastUtter === u && !synth.speaking && !synth.pending) toast(NO_VOICE); }, 3000);
     };
     // 재생 중에 다시 누르면 멈추고 조금 뒤에 새로 읽는다(멈춘 직후 바로 읽으면 무시되는 기기가 있다)
     if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 150); } else go();
@@ -965,9 +991,9 @@
       else { $('#q').value = chars($('#q').value).slice(0, -1).join(''); queryChanged(); }
     }
     if (act === 'back') { if (history.length > 1) history.back(); else location.hash = '#/'; }
-    if (act === 'say-entry') speak(entryWord);
-    if (act === 'say') speak(b.dataset.t);
-    if (act === 'voice-test') speak('你好，歡迎來到台灣。');
+    if (act === 'say-entry') speak(entryWord, b);
+    if (act === 'say') speak(b.dataset.t, b);
+    if (act === 'voice-test') speak('你好，歡迎來到台灣。', b);
     if (act === 'reload') location.reload();   // 홈 화면 앱에는 새로 고침 버튼이 없어서 따로 둔다
     if (act === 'voice-status') {
       var st = voiceStatus();
