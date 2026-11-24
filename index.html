@@ -80,6 +80,134 @@
   <div id="gcard"></div>
 </section>
 
+<!-- 발음 안내 -->
+<section id="screen-guide" class="screen" hidden>
+  <header class="bar topbar">
+    <button data-act="back" class="icon" aria-label="뒤로">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="bartitle">발음 안내</div>
+  </header>
+
+  <h2 class="sec">1. 성조</h2>
+  <div class="gpad">
+    <p>중국어는 음절마다 높낮이(성조)가 있어서, 소리가 같아도 성조가 다르면 다른 말이 됩니다. 이 사전은 병음을 성조별 색으로 칠합니다. 누르면 소리가 납니다.</p>
+    <div class="tones">
+      <button type="button" data-act="say" data-t="媽"><b class="t1">mā</b><span lang="zh-Hant">媽</span><i>1성<br>높고 평평하게</i><em>엄마</em></button>
+      <button type="button" data-act="say" data-t="麻"><b class="t2">má</b><span lang="zh-Hant">麻</span><i>2성<br>아래에서 위로</i><em>삼, 저리다</em></button>
+      <button type="button" data-act="say" data-t="馬"><b class="t3">mǎ</b><span lang="zh-Hant">馬</span><i>3성<br>낮게 눌러서</i><em>말</em></button>
+      <button type="button" data-act="say" data-t="罵"><b class="t4">mà</b><span lang="zh-Hant">罵</span><i>4성<br>위에서 뚝</i><em>꾸짖다</em></button>
+      <button type="button" data-act="say" data-t="嗎"><b class="t5">ma</b><span lang="zh-Hant">嗎</span><i>경성<br>짧고 가볍게</i><em>~요?</em></button>
+    </div>
+    <p class="gnote">주음부호에서는 1성은 표시하지 않고, 2성 ˊ · 3성 ˇ · 4성 ˋ을 뒤에 붙이며, 경성은 앞에 ˙을 붙입니다. 예: 媽 ㄇㄚ · 麻 ㄇㄚˊ · 馬 ㄇㄚˇ · 罵 ㄇㄚˋ · 嗎 ˙ㄇㄚ</p>
+  </div>
+
+  <h2 class="sec">2. 성조가 바뀌는 경우</h2>
+  <div class="gpad">
+    <ul class="glist">
+      <li><b>3성 + 3성 → 2성 + 3성</b>: <a href="#/w/%E4%BD%A0%E5%A5%BD" lang="zh-Hant">你好</a> nǐ hǎo는 ní hǎo처럼 읽습니다.</li>
+      <li><b>不 bù</b>: 4성 앞에서는 2성 bú가 됩니다. <a href="#/w/%E4%B8%8D%E6%9C%83" lang="zh-Hant">不會</a> bú huì · <a href="#/w/%E4%B8%8D%E8%A6%81" lang="zh-Hant">不要</a> bú yào</li>
+      <li><b>一 yī</b>: 4성 앞에서는 yí(<a href="#/w/%E4%B8%80%E5%AE%9A" lang="zh-Hant">一定</a> yídìng), 다른 성조 앞에서는 yì(<a href="#/w/%E4%B8%80%E8%B5%B7" lang="zh-Hant">一起</a> yìqǐ). 숫자를 셀 때는 그대로 yī입니다.</li>
+      <li><b>반3성</b>: 3성 뒤에 다른 성조가 오면 끝을 올리지 않고 낮게만 냅니다. 대만 사람들은 3성을 끝까지 올리는 일이 드물어 3성이 대개 낮게 들립니다.</li>
+    </ul>
+    <p class="gnote">이 사전의 병음은 不·一의 바뀐 성조를 반영해 적었습니다. 3성 + 3성은 원래 성조대로 적었습니다.</p>
+  </div>
+
+  <h2 class="sec">3. 주음부호 (ㄅㄆㄇ)</h2>
+  <div class="gpad">
+    <p>대만에서는 병음 대신 주음부호로 발음을 배웁니다. 37개 기호로 소리를 적고, 휴대폰 중국어 자판도 주음으로 많이 씁니다. 기호를 누르면 예시 글자를 읽어 줍니다.</p>
+  </div>
+  <h3 class="gsub">성모(첫소리) 21개</h3>
+  <div class="zygrid">
+    <button type="button" data-act="say" data-t="八"><b>ㄅ</b><span>b</span><i>八 bā</i></button>
+    <button type="button" data-act="say" data-t="怕"><b>ㄆ</b><span>p</span><i>怕 pà</i></button>
+    <button type="button" data-act="say" data-t="媽"><b>ㄇ</b><span>m</span><i>媽 mā</i></button>
+    <button type="button" data-act="say" data-t="發"><b>ㄈ</b><span>f</span><i>發 fā</i></button>
+    <button type="button" data-act="say" data-t="大"><b>ㄉ</b><span>d</span><i>大 dà</i></button>
+    <button type="button" data-act="say" data-t="他"><b>ㄊ</b><span>t</span><i>他 tā</i></button>
+    <button type="button" data-act="say" data-t="拿"><b>ㄋ</b><span>n</span><i>拿 ná</i></button>
+    <button type="button" data-act="say" data-t="拉"><b>ㄌ</b><span>l</span><i>拉 lā</i></button>
+    <button type="button" data-act="say" data-t="哥"><b>ㄍ</b><span>g</span><i>哥 gē</i></button>
+    <button type="button" data-act="say" data-t="可"><b>ㄎ</b><span>k</span><i>可 kě</i></button>
+    <button type="button" data-act="say" data-t="喝"><b>ㄏ</b><span>h</span><i>喝 hē</i></button>
+    <button type="button" data-act="say" data-t="雞"><b>ㄐ</b><span>j</span><i>雞 jī</i></button>
+    <button type="button" data-act="say" data-t="七"><b>ㄑ</b><span>q</span><i>七 qī</i></button>
+    <button type="button" data-act="say" data-t="西"><b>ㄒ</b><span>x</span><i>西 xī</i></button>
+    <button type="button" data-act="say" data-t="知"><b>ㄓ</b><span>zh</span><i>知 zhī</i></button>
+    <button type="button" data-act="say" data-t="吃"><b>ㄔ</b><span>ch</span><i>吃 chī</i></button>
+    <button type="button" data-act="say" data-t="師"><b>ㄕ</b><span>sh</span><i>師 shī</i></button>
+    <button type="button" data-act="say" data-t="日"><b>ㄖ</b><span>r</span><i>日 rì</i></button>
+    <button type="button" data-act="say" data-t="字"><b>ㄗ</b><span>z</span><i>字 zì</i></button>
+    <button type="button" data-act="say" data-t="次"><b>ㄘ</b><span>c</span><i>次 cì</i></button>
+    <button type="button" data-act="say" data-t="四"><b>ㄙ</b><span>s</span><i>四 sì</i></button>
+  </div>
+  <h3 class="gsub">개음 3개 · 운모 13개</h3>
+  <div class="zygrid">
+    <button type="button" data-act="say" data-t="一"><b>ㄧ</b><span>i</span><i>一 yī</i></button>
+    <button type="button" data-act="say" data-t="五"><b>ㄨ</b><span>u</span><i>五 wǔ</i></button>
+    <button type="button" data-act="say" data-t="魚"><b>ㄩ</b><span>ü</span><i>魚 yú</i></button>
+    <button type="button" data-act="say" data-t="阿"><b>ㄚ</b><span>a</span><i>阿 ā</i></button>
+    <button type="button" data-act="say" data-t="喔"><b>ㄛ</b><span>o</span><i>喔 ō</i></button>
+    <button type="button" data-act="say" data-t="餓"><b>ㄜ</b><span>e</span><i>餓 è</i></button>
+    <button type="button" data-act="say" data-t="耶"><b>ㄝ</b><span>ê</span><i>耶 yē</i></button>
+    <button type="button" data-act="say" data-t="愛"><b>ㄞ</b><span>ai</span><i>愛 ài</i></button>
+    <button type="button" data-act="say" data-t="黑"><b>ㄟ</b><span>ei</span><i>黑 hēi</i></button>
+    <button type="button" data-act="say" data-t="奧"><b>ㄠ</b><span>ao</span><i>奧 ào</i></button>
+    <button type="button" data-act="say" data-t="歐"><b>ㄡ</b><span>ou</span><i>歐 ōu</i></button>
+    <button type="button" data-act="say" data-t="安"><b>ㄢ</b><span>an</span><i>安 ān</i></button>
+    <button type="button" data-act="say" data-t="恩"><b>ㄣ</b><span>en</span><i>恩 ēn</i></button>
+    <button type="button" data-act="say" data-t="昂"><b>ㄤ</b><span>ang</span><i>昂 áng</i></button>
+    <button type="button" data-act="say" data-t="風"><b>ㄥ</b><span>eng</span><i>風 fēng</i></button>
+    <button type="button" data-act="say" data-t="二"><b>ㄦ</b><span>er</span><i>二 èr</i></button>
+  </div>
+  <div class="gpad">
+    <p class="gnote">ㄓㄔㄕㄖ는 혀끝을 들어 입천장 쪽으로 말아 내는 소리, ㄐㄑㄒ는 혀끝을 아랫니 뒤에 두고 혓바닥을 입천장에 붙여 내는 소리, ㄗㄘㄙ는 혀끝을 윗니 뒤에 대고 내는 소리입니다. ㄩ는 입술을 '우'처럼 동그랗게 모은 채 '이'를 발음합니다.</p>
+    <p>읽는 순서는 성모 → 개음 → 운모 → 성조입니다. <a href="#/w/%E5%8F%B0%E7%81%A3" lang="zh-Hant">台灣</a> = ㄊㄞˊ ㄨㄢ (tái wān) · <a href="#/w/%E6%8D%B7%E9%81%8B" lang="zh-Hant">捷運</a> = ㄐㄧㄝˊ ㄩㄣˋ (jié yùn). 검색창에 주음을 넣어도 찾을 수 있습니다.</p>
+  </div>
+
+  <h2 class="sec">4. 대만 발음과 본토 발음</h2>
+  <div class="gpad">
+    <p>대만의 표준 중국어(國語)와 본토의 표준 중국어(普通話)는 같은 언어의 두 표준이라 서로 문제없이 알아듣습니다. 다만 몇 가지 차이가 있어, 대만에서 지낸다면 대만식으로 익히는 편이 자연스럽습니다.</p>
+    <h3>글자마다 정한 읽기가 다른 단어</h3>
+    <table class="gtable">
+      <thead><tr><th>단어</th><th>대만</th><th>본토</th></tr></thead>
+      <tbody>
+        <tr><td><a href="#/w/%E5%9E%83%E5%9C%BE">垃圾</a> 쓰레기</td><td>lèsè</td><td>lājī</td></tr>
+        <tr><td><a href="#/w/%E6%98%9F%E6%9C%9F">星期</a> 요일</td><td>xīngqí</td><td>xīngqī</td></tr>
+        <tr><td><a href="#/w/%E8%AA%8D%E8%AD%98">認識</a> 알다</td><td>rènshì</td><td>rènshi</td></tr>
+        <tr><td><a href="#/w/%E7%A0%94%E7%A9%B6">研究</a> 연구</td><td>yánjiù</td><td>yánjiū</td></tr>
+        <tr><td><a href="#/w/%E9%A0%AD%E9%AB%AE">頭髮</a> 머리카락</td><td>tóufǎ</td><td>tóufa</td></tr>
+        <tr><td><a href="#/w/%E6%9A%AB%E6%99%82">暫時</a> 잠시</td><td>zhànshí</td><td>zànshí</td></tr>
+        <tr><td><a href="#/w/%E6%B6%88%E6%81%AF">消息</a> 소식</td><td>xiāoxí</td><td>xiāoxi</td></tr>
+        <tr><td><a href="#/w/%E4%BE%BF%E7%A7%98">便秘</a> 변비</td><td>biànbì</td><td>biànmì</td></tr>
+        <tr><td><a href="#/w/%E5%92%8C">和</a> ~와</td><td>hàn (구어)</td><td>hé</td></tr>
+      </tbody>
+    </table>
+    <h3>경성을 덜 씀</h3>
+    <p>본토에서 뒤 글자를 가볍게 읽는 단어도 대만에서는 성조를 살려 읽습니다. <a href="#/w/%E6%9D%B1%E8%A5%BF" lang="zh-Hant">東西</a> dōngxī · <a href="#/w/%E4%BE%BF%E5%AE%9C" lang="zh-Hant">便宜</a> piányí · <a href="#/w/%E9%BA%BB%E7%85%A9" lang="zh-Hant">麻煩</a> máfán · <a href="#/w/%E5%8E%B2%E5%AE%B3" lang="zh-Hant">厲害</a> lìhài</p>
+    <h3>얼화(兒)를 거의 안 씀</h3>
+    <p>這兒 → <a href="#/w/%E9%80%99%E8%A3%A1" lang="zh-Hant">這裡</a> · 哪兒 → <a href="#/w/%E5%93%AA%E8%A3%A1" lang="zh-Hant">哪裡</a> · 一點兒 → <a href="#/w/%E4%B8%80%E9%BB%9E" lang="zh-Hant">一點</a> · 好玩兒 → <a href="#/w/%E5%A5%BD%E7%8E%A9" lang="zh-Hant">好玩</a> · 一會兒 → <a href="#/w/%E4%B8%80%E4%B8%8B" lang="zh-Hant">一下</a></p>
+    <h3>일상 말소리의 경향</h3>
+    <ul class="glist">
+      <li>ㄓㄔㄕ(zh·ch·sh)가 ㄗㄘㄙ(z·c·s)에 가깝게 들립니다.</li>
+      <li>-n과 -ng(ㄣ/ㄥ, ㄢ/ㄤ)의 구분이 흐려지기도 합니다.</li>
+      <li>3성을 낮게 끝내고, 喔·啦·耶 같은 말끝 조사를 많이 써서 부드럽게 들립니다.</li>
+    </ul>
+    <p class="gnote">이런 말버릇은 일부러 따라 하지 않아도 됩니다. 대만 방송과 학교에서도 표준 발음을 쓰니, 표준 발음을 지키면서 알아듣는 귀만 익혀 두세요.</p>
+  </div>
+
+  <h2 class="sec">5. 이 사전의 표시</h2>
+  <div class="gpad gkeys">
+    <div><span class="t1">1성</span> · <span class="t2">2성</span> · <span class="t3">3성</span> · <span class="t4">4성</span> · <span class="t5">경성</span> — 병음과 한자의 색</div>
+    <div><span class="tag tw">台</span>대만에서 쓰는 표현이나 대만식 읽기가 있는 단어</div>
+    <div><span class="tag en">EN</span>한국어 풀이가 아직 없어 영어 풀이를 보여 주는 단어</div>
+    <div><span class="badge">대만 표현</span> <span class="badge cn">본토: …</span> 본토에서는 다른 말을 쓰는 단어</div>
+    <div><span class="badge">대만에서 더 흔함</span> <span class="badge cn">본토에서 더 흔함: …</span> 양쪽 다 쓰지만 즐겨 쓰는 말이 다른 단어</div>
+    <div><span class="badge plain">표준어: …</span> 대만어·구어 표현과 같은 뜻의 표준어</div>
+    <div><span class="badge cn">본토 발음: …</span> 대만과 본토의 읽기가 다를 때 본토 읽기</div>
+  </div>
+</section>
+
 <!-- 단어장 -->
 <section id="screen-fav" class="screen" hidden>
   <header class="bar title">단어장</header>
@@ -181,6 +309,7 @@
 <script src="data/ko-data-2.js"></script>
 <script src="data/ko-data-3.js"></script>
 <script src="data/ko-data-4.js"></script>
+<script src="data/ko-data-5.js"></script>
 <script src="data/grammar-data.js"></script>
 <script src="data/examples-data.js"></script>
 <script src="data/examples-data-2.js"></script>
